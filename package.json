@@ -6,12 +6,7 @@
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
-<<<<<<< HEAD
     "mongoose": "^8.5.3",
-=======
-    "mongodb": "^6.8.0",
-    "mongoose": "^8.5.2",
->>>>>>> e000cb0a98c66e63749265d127d8f396f58bf6ce
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0"
   },
@@ -21,10 +16,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-<<<<<<< HEAD
   "keywords": [],
-=======
->>>>>>> e000cb0a98c66e63749265d127d8f396f58bf6ce
   "author": "",
   "license": "ISC",
   "description": ""

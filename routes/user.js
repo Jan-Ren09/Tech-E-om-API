@@ -75,7 +75,7 @@ router.put('/profile', verify, userController.updateProfile);
 // });
 
 
-router.patch('/:id/set-as-admin/', verify, verifyAdmin, userController.makeUserAdmin);
+// router.patch('/:id/set-as-admin/', verify, verifyAdmin, userController.makeUserAdmin);
 
 //[SECTION] Route for user registration
 router.post("/register", userController.registerUser);
