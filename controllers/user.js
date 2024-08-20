@@ -2,7 +2,7 @@
 // The "User" variable is defined using a capitalized letter to indicate that what we are using is the "User" model for the sake of code readability.
 const bcrypt = require('bcrypt');
 const User = require("../models/User");
-const Enrollment = require("../models/Enrollment");
+// const Enrollment = require("../models/Enrollment");
 const auth = require('../auth')
 const { errorHandler } = require('../auth')
 
@@ -247,32 +247,6 @@ module.exports.getProfile = (req, res) => {
 	5. Make sure that this function is only available to the regular users.
 */
 
-module.exports.enroll = (req, res) => {
-	//The user's id from the decoded token after verify
-	console.log(req.user.id);
-	//The course from our requesst body
-	console.log(req.body.enrolledCourses);
-
-	// an admin shouldn't have the capability to enroll in the course booking api
-	if(req.user.isAdmin){
-		return res.status(403).send({ message: 'Admin is forbidden' });
-	}
-
-	let newEnrollment = new Enrollment ({
-		userId: req.user.id,
-		enrolledCourses: req.body.enrolledCourses,
-		totalPrice: req.body.totalPrice
-	})
-
-	return newEnrollment.save()
-	.then(enrolled => {
-		return res.status(201).send({
-            success: true,
-            message: 'Enrolled successfully'
-        });
-	})
-	.catch(error => errorHandler(error, req, res))
-}
 
 
 //[SECTION] Activity: Get enrollments
@@ -281,15 +255,3 @@ module.exports.enroll = (req, res) => {
     1. Use the mongoose method "find" to retrieve all enrollments for the logged in user
     2. If no enrollments are found, return a 404 error. Else return a 200 status and the enrollment record
 */
-module.exports.getEnrollments = (req, res) => {
-    return Enrollment.find({userId : req.user.id})
-	    .then(enrollments => {
-	        if (enrollments.length > 0) {
-	            return res.status(200).send(enrollments);
-	        }
-	        return res.status(404).send({
-                    message: 'No enrolled courses'
-                });
-	    })
-	    .catch(error => errorHandler(error, req, res));
-};	

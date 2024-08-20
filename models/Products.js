@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const courseSchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Course Name is Required']
+        required: [true, 'Name is required']
     },
     description: {
         type: String,
@@ -23,4 +23,4 @@ const courseSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Course', courseSchema);
+module.exports = mongoose.model('Product', productSchema);

@@ -2,9 +2,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 // Google Login
-const passport = require('passport');
-const session = require('express-session');
-require('./passport');
+// const passport = require('passport');
+// const session = require('express-session');
+// require('./passport');
 // Allows our backend application to be available to our frontend application
 // Allows us to control the app's Cross Origin Resource Sharing settings
 const cors = require("cors")
@@ -13,7 +13,7 @@ const cors = require("cors")
 //Allows access to routes defined within our application
 const userRoutes = require("./routes/user");
 //[SECTION] Activity: Allows access to routes defined within our application
-const courseRoutes = require("./routes/course");
+const productRoutes = require("./routes/product");
 
 //[SECTION] Environment Setup
 //const port = 4000;
@@ -36,20 +36,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// [Section] Google Login
-// Creates a session with the given data
-// resave prevents the session from overwriting the secret while the session is active
-// saveUninitialized prevents the data from storing data in the session while the data has not yet been initialized
-app.use(session({
-    secret: process.env.clientSecret,
-    resave: false,
-    saveUninitialized: false
-}));
-// Initializes the passport package when the application runs
-app.use(passport.initialize());
-// Creates a session using the passport package
-app.use(passport.session());
-
+// [Section] Google Login for stretch goals
 
 mongoose.connect(process.env.MONGO_STRING);
 
@@ -63,7 +50,7 @@ mongoose.connection.once('open', () => console.log('Now connected to MongoDB Atl
 app.use("/users", userRoutes);
 
 //[SECTION] Activity: Add course routes
-app.use("/courses", courseRoutes);
+app.use("/products", productRoutes);
 
 
 //[SECTION] Server Gateway Response
