@@ -1,0 +1,13 @@
+non-admin user:
+
+{
+    "email": "delasalas@gmail.com",
+    "password": "delasalas12345"
+}
+
+admin user:
+
+{
+    "email": "jan@gmail.com",
+    "password": "Jan12345"
+}
