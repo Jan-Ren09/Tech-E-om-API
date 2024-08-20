@@ -4,7 +4,7 @@ const userController = require("../controllers/user");
 //Google Login
 const passport = require('passport');
 //Import the auth module and deconstruct it to get our verify method.
-const { verify, isLoggedIn } = require("../auth");
+const { verify, isLoggedIn, verifyAdmin } = require("../auth");
 
 //[SECTION] Routing Component
 const router = express.Router();
@@ -75,20 +75,20 @@ router.get("/logout", (req, res) => {
 });
 
 
+router.patch('/:id/set-as-admin/', verify, verifyAdmin, userController.makeUserAdmin);
+
 //[SECTION] Route for user registration
 router.post("/register", userController.registerUser);
 
 router.post("/login", userController.loginUser);
 
-//[SECTION] Activity: Route for duplicate email
-router.post("/check-email", userController.checkEmailExists);
 
-//[SECTION] Activity: Route for retrieving user details
-//All business logic will now be handled by our controller
 router.get("/details", verify, userController.getProfile);
 
 //[SECTION] Discussion: Route to enroll a user to a course
 router.post('/enroll', verify, userController.enroll)
+
+router.patch('/update-password', verify, userController.resetPassword);
 
 //Allows us to export the "router" object that will be accessed in our index.js file
 module.exports = router;
