@@ -11,3 +11,8 @@ admin user:
     "email": "jan@gmail.com",
     "password": "Jan12345"
 }
+
+{
+    "email": "consumer@mail.com",
+    "password": "password1234"
+}

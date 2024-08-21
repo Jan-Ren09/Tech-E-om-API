@@ -4,18 +4,24 @@ const { verify, verifyAdmin } = require('../auth');
 const router = express.Router();
 
 // Create Product
-router.post('/create', verify, verifyAdmin, productController.createProduct);
+router.post('/', verify, verifyAdmin, productController.createProduct);
 
 // Retrieve All Product
 router.get('/all', productController.retrieveAllProduct);
 
 // Retrieve All Active Product
-router.get('/', productController.retrieveAllActive);
+router.get('/active', productController.retrieveAllActive);
 
 // Retrieve Single Product
-router.get("/search", productController.retrieveOne);
+router.get("/:productId", productController.retrieveOne);
 
 // Update Product Information
-router.patch("/:productId", verify, verifyAdmin, productController.updateProduct)
+router.patch("/:productId/update", verify, verifyAdmin, productController.updateProduct)
+
+// Archive Product
+router.patch("/:productId/archive", verify, verifyAdmin, productController.archiveProduct);
+
+// Activate Product
+router.patch("/:productId/activate", verify, verifyAdmin, productController.activateProduct);
 
 module.exports = router;
