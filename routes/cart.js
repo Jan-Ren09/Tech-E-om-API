@@ -12,4 +12,5 @@ router.post('/add', verify, cartController.addToCart);
 // Change product quantity
 router.put('/quantity', verify, cartController.updateProductQuantity);
 
+
 module.exports = router;

@@ -1,5 +1,5 @@
 const Cart = require("../models/Cart");
-const Product = require("../models/Products");
+const Product = require("../models/Product");
 const { errorHandler } = require('../auth');
 
 // Get Cart
@@ -32,7 +32,7 @@ module.exports.addToCart = (req, res) => {
     }
     
     // Find the user's cart by userId
-    Cart.findOne({ userId: req.user._id })
+    Cart.findOne({ userId: req.user.id })
     .then(cart => {
       if (cart) {
         // Check if the product is already in the cart
@@ -89,7 +89,7 @@ module.exports.updateProductQuantity = async (req, res) => {
   }
   
   try {
-    const cart = await Cart.findOne({ userId: req.user._id });
+    const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
     }
@@ -119,5 +119,26 @@ module.exports.updateProductQuantity = async (req, res) => {
     return res.status(200).json(updatedCart);
   } catch (error) {
     errorHandler(error, req, res);
+  }
+};
+
+// Clear Cart
+module.exports.clearCart = async (req, res) => {
+
+  try {
+    const cart = await Cart.findOne({ userId: req.user.id });
+
+    if(!cart) {
+      return res.status(404).send({ message: 'Cart not found'})
+    }
+
+    // Need cart = 0 tapos total price = 0 
+    cart.cartItems = [];
+    cart.totalPrice = 0
+
+    await cart.save();
+    return res.status(200).send({ message: 'Cart cleared Successfully'})
+  } catch (err) {
+    return res.status(500).send({ message: 'Error clearing cart', error: err.message})
   }
 };
