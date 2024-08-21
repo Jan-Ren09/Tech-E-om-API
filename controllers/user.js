@@ -224,21 +224,43 @@ module.exports.getProfile = (req, res) => {
     .catch(error => errorHandler(error, req, res));
 };
 
-//[SECTION] Enroll a user to a course
-/*
-	Steps: 
-	1. Retrieve the user's id
-	2. Double check the token/decoded after our middleware
-	3. Try to indicate the courses being enrolled to in our reqeuest body
-	4. Make sure to check the users authentication (reg user or admin user)
-	5. Make sure that this function is only available to the regular users.
-*/
+module.exports.makeUserAdmin = async (req, res) => {
+    try {
+        // Find the user by the id provided in the URL params
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update the user's role to admin
+        user.isAdmin = true;
+
+        // Save the updated user
+        await user.save();
+
+        res.status(200).json({ message: 'User has been successfully updated to an admin.' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
 
-
-//[SECTION] Activity: Get enrollments
-/*
-    Steps:
-    1. Use the mongoose method "find" to retrieve all enrollments for the logged in user
-    2. If no enrollments are found, return a 404 error. Else return a 200 status and the enrollment record
-*/
+module.exports.changePassword = async (req, res) => {
+	try {
+	  const { newPassword } = req.body;
+	  const { id } = req.user; // Extracting user ID from the authorization header
+  
+	  // Hashing the new password
+	  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+	  // Updating the user's password in the database
+	  await User.findByIdAndUpdate(id, { password: hashedPassword });
+  
+	  // Sending a success response
+	  res.status(200).json({ message: 'Password changed successfully' });
+	} catch (error) {
+	  console.error(error);
+	  res.status(500).json({ message: 'Internal server error' });
+	}
+};

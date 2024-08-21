@@ -75,7 +75,7 @@ router.put('/profile', verify, userController.updateProfile);
 // });
 
 
-// router.patch('/:id/set-as-admin/', verify, verifyAdmin, userController.makeUserAdmin);
+router.patch('/:id/set-as-admin/', verify, verifyAdmin, userController.makeUserAdmin);
 
 //[SECTION] Route for user registration
 router.post("/register", userController.registerUser);
@@ -88,5 +88,5 @@ router.get("/details", verify, userController.getProfile);
 
 router.patch('/update-password', verify, userController.resetPassword);
 
-//Allows us to export the "router" object that will be accessed in our index.js file
+
 module.exports = router;
