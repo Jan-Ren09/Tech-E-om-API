@@ -15,5 +15,7 @@ router.patch('/update-cart-quantity', verify, cartController.updateProductQuanti
 // Remove product
 router.patch('/remove-product', verify, cartController.removeProduct);
 
+// Clear cart
+router.delete('/clear-cart', verify, cartController.clearCart);
 
 module.exports = router;

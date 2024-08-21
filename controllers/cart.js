@@ -1,5 +1,5 @@
 const Cart = require("../models/Cart");
-const Product = require("../models/Products");
+const Product = require("../models/Product");
 const { errorHandler } = require('../auth');
 
 // Get Cart
@@ -152,3 +152,23 @@ module.exports.removeProduct = async (req, res) => {
   }
 };
 
+// Clear Cart
+module.exports.clearCart = async (req, res) => {
+
+  try {
+    const cart = await Cart.findOne({ userId: req.user.id });
+
+    if(!cart) {
+      return res.status(404).send({ message: 'Cart not found'})
+    }
+
+    // Need cart = 0 tapos total price = 0 
+    cart.cartItems = [];
+    cart.totalPrice = 0
+
+    await cart.save();
+    return res.status(200).send({ message: 'Cart cleared Successfully'})
+  } catch (err) {
+    return res.status(500).send({ message: 'Error clearing cart', error: err.message})
+  }
+};
