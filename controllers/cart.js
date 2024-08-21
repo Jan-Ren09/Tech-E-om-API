@@ -32,7 +32,7 @@ module.exports.addToCart = (req, res) => {
     }
     
     // Find the user's cart by userId
-    Cart.findOne({ userId: req.user._id })
+    Cart.findOne({ userId: req.user.id })
     .then(cart => {
       if (cart) {
         // Check if the product is already in the cart
@@ -89,7 +89,7 @@ module.exports.updateProductQuantity = async (req, res) => {
   }
   
   try {
-    const cart = await Cart.findOne({ userId: req.user._id });
+    const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
     }
@@ -121,3 +121,34 @@ module.exports.updateProductQuantity = async (req, res) => {
     errorHandler(error, req, res);
   }
 };
+
+
+// Remove Product from Cart
+module.exports.removeProduct = async (req, res) => {
+  const { productId } = req.body;
+
+  try {
+    const cart = await Cart.findOne({userId: req.user.id});
+    if (!cart) {
+      return res.status(404).send({ message: 'Cart not found' });
+    }
+
+    const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
+
+    if (itemIndex === -1) {
+      return res.status(404).send({ message: 'Product not found in cart' });
+    }
+
+    // Remove the product from the cart
+    cart.cartItems.splice(itemIndex, 1);
+
+    // Recalculate the total price
+    cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
+
+    const updatedCart = await cart.save();
+    return res.status(200).json(updatedCart);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
