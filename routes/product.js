@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/', verify, verifyAdmin, productController.createProduct);
 
 // Retrieve All Product
-router.get('/all', productController.retrieveAllProduct);
+router.get('/all', verify, verifyAdmin, productController.retrieveAllProduct);
 
 // Retrieve All Active Product
 router.get('/active', productController.retrieveAllActive);
