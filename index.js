@@ -1,12 +1,6 @@
 //[SECTION] Dependencies and Modules
 const express = require("express");
 const mongoose = require("mongoose");
-// Google Login
-// const passport = require('passport');
-// const session = require('express-session');
-// require('./passport');
-// Allows our backend application to be available to our frontend application
-// Allows us to control the app's Cross Origin Resource Sharing settings
 const cors = require("cors")
 
 //[SECTION] Routes
@@ -14,6 +8,8 @@ const cors = require("cors")
 const userRoutes = require("./routes/user");
 //[SECTION] Activity: Allows access to routes defined within our application
 const productRoutes = require("./routes/product");
+// Cart
+const cartRoutes = require("./routes/cart");
 
 //[SECTION] Environment Setup
 //const port = 4000;
@@ -51,6 +47,9 @@ app.use("/users", userRoutes);
 
 //[SECTION] Activity: Add course routes
 app.use("/products", productRoutes);
+
+// Cart routes
+app.use("/cart", cartRoutes);
 
 
 //[SECTION] Server Gateway Response
