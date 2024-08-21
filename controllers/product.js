@@ -14,12 +14,12 @@ module.exports.createProduct = (req, res) => {
     Product.findOne({ name: req.body.name })
     .then(existingProduct => {
 
-        if (existingCourse) {
+        if (existingProduct) {
             return res.status(409).send({ message: 'Product already exists'});
 
         } else {
             return newProduct.save()
-            .then(resutl => res.status(201).send({
+            .then(result => res.status(201).send({
                 success: true,
                 message: 'Product has been added',
                 result: result
