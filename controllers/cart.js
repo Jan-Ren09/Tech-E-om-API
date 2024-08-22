@@ -5,19 +5,30 @@ const { errorHandler } = require('../auth');
 // Get Cart
 module.exports.getCart = async (req, res) => {
   try {
-    const cart = await Cart.findById(req.cart.id);
+    if (req.user.isAdmin) {
+      return res.status(403).send({ message: 'Admins cannot access the cart' });
+    }
+
+    const cart = await Cart.findOne({ userId: req.user.id });
+    
     if (!cart) {
-      return res.status(403).send({ message: 'Invalid Cart ID' });
+      return res.status(404).send({ message: 'Cart not found' });
     }
     return res.status(200).send(cart);
+
   } catch (error) {
-    errorHandler(error, req, res);
+    return res.status(500).send({ message: 'Error retrieving cart', error: error.message });
   }
 };
 
 // Add to Cart
 module.exports.addToCart = (req, res) => {
   const { productId, quantity } = req.body;
+
+  // Admin should not be able to add to cart
+  if(req.user.isAdmin) {
+    return res.status(403).send({ message: 'Admins cannot add to cart'});
+  }
   
   // Ensure quantity is positive
   if (quantity <= 0) {
@@ -84,6 +95,10 @@ module.exports.addToCart = (req, res) => {
 module.exports.updateProductQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
   
+  if(req.user.isAdmin) {
+    return res.status(403).send({ message: 'Admins cannot change cart quantity'});
+  }
+
   if (quantity < 0) {
     return res.status(400).send({ message: 'Quantity cannot be negative' });
   }
