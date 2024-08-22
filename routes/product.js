@@ -12,6 +12,9 @@ router.get('/all', verify, verifyAdmin, productController.retrieveAllProduct);
 // Retrieve All Active Product
 router.get('/active', productController.retrieveAllActive);
 
+// Filter products by name and price range
+router.get('/filter-products',  productController.filterProducts);
+
 // Retrieve Single Product
 router.get("/:productId", productController.retrieveOne);
 
@@ -23,5 +26,6 @@ router.patch("/:productId/archive", verify, verifyAdmin, productController.archi
 
 // Activate Product
 router.patch("/:productId/activate", verify, verifyAdmin, productController.activateProduct);
+
 
 module.exports = router;

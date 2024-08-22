@@ -125,3 +125,43 @@ module.exports.activateProduct = async (req, res) => {
         errorHandler(error, req, res);
     }
 };
+
+module.exports.filterProducts = async (req, res) => {
+    const { name, minPrice, maxPrice } = req.body;
+  
+    // Log the received query parameters
+    console.log('Received Query Parameters:', { name, minPrice, maxPrice });
+  
+    try {
+        // Build the filter query
+        let filter = {};
+    
+        if (name) {
+            filter.name = { $regex: name, $options: 'i' }; // Case-insensitive search
+        }
+    
+        if (minPrice !== undefined) {
+            const min = parseFloat(minPrice);
+            if (!isNaN(min)) {
+                filter.price = { ...filter.price, $gte: min }; // Greater than or equal to minPrice
+            }
+        }
+    
+        if (maxPrice !== undefined) {
+            const max = parseFloat(maxPrice);
+            if (!isNaN(max)) {
+                filter.price = { ...filter.price, $lte: max }; // Less than or equal to maxPrice
+            } 
+        }
+    
+        // Log the constructed filter query
+        console.log('Constructed Filter Query:', filter);
+    
+        const products = await Product.find(filter);
+    
+        return res.status(200).json(products);
+    } catch (error) {
+        console.error('Error:', error);
+        errorHandler(error, req, res);
+    }
+};
