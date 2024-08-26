@@ -1,54 +1,91 @@
-const Order = require('../models/Order'); // Adjust the path as necessary
-const Cart = require('../models/Cart'); // Adjust the path as necessary
-const { errorHandler } = require('../auth'); // Import the error handler
+const Order = require('../models/Order'); // Adjust the path as needed
+const Product = require('../models/Product'); // Assuming you have a Product model
+const { errorHandler } = require('../auth');
 
 // Controller function to create an order
 module.exports.createOrder = async (req, res) => {
-  try {
-      const { orderItems } = req.body;
-      const { userId, cartId } = req; // Assuming verify middleware adds userId and cartId to req
-
-      // Validate required fields
-      if (!orderItems || orderItems.length === 0) {
-          return errorHandler(res, 400, 'Order items are required');
+    try {
+      if (req.user.isAdmin) {
+        return res.status(403).send({ message: 'Action not allowed, User is an Admin' });
       }
+        const { checkOutItems } = req.body;
+        const userId = req.user.id; 
 
-      // Initialize totalAmount
-      let totalAmount = 0;
+   
+        if (!checkOutItems || !checkOutItems.length) {
+            return res.status(400).json({ error: 'checkOutItems are required' });
+        }
 
-      // Validate and fetch product details
-      for (const item of orderItems) {
-          if (!item.productId || !item.quantity) {
-              return errorHandler(res, 400, 'Product ID and quantity are required for each item');
-          }
+        let orderItems = [];
+        let totalAmount = 0;
 
-          // Fetch product details
-          const product = await Product.findById(item.productId);
-          if (!product) {
-              return errorHandler(res, 404, `Product with ID ${item.productId} not found`);
-          }
+    
+        for (let item of checkOutItems) {
+            const product = await Product.findById(item.productId);
+            if (!product) {
+                return res.status(404).json({ error: `Product with ID ${item.productId} not found` });
+            }
 
-          // Calculate total amount
-          totalAmount += product.price * item.quantity;
-      }
+            const orderItem = {
+                productId: product._id,
+                quantity: item.quantity,
+                price: product.price,
+            };
 
-      // Create a new order
-      const newOrder = new Order({
-          userId,
-          cartId,
-          orderItems,
-          totalAmount
-      });
+            orderItems.push(orderItem);
+            totalAmount += product.price * item.quantity;
+        }
 
-      // Save the order to the database
-      const savedOrder = await newOrder.save();
+        // Create a new order instance
+        const newOrder = new Order({
+            userId,
+            orderItems,
+            totalAmount
+        });
 
-      // Respond with the created order
-      res.status(201).json({
-          message: 'Order created successfully',
-          order: savedOrder
-      });
+        // Save the order to the database
+        const savedOrder = await newOrder.save();
+
+      
+        res.status(201).json({ message: 'Order created successfully', order: savedOrder });
     } catch (error) {
-      errorHandler(error, req, res);
-    }
+        errorHandler(error, req, res)
+      }
 };
+
+module.exports.getAllOrders = async (req, res) => {
+try {
+  const orders = await Order.find({});
+
+        res.status(200).json(orders);
+
+}catch (error) {
+    errorHandler(error, req, res)
+  }
+};
+
+
+
+module.exports.getUserOrders = async (req, res) => {
+  try {
+     
+      const orders = await Order.find({ userId: req.user.id });
+
+      
+      if (!orders.length) {
+          return res.status(404).json({ message: `No orders found for user ${req.user.id}` });
+      }
+
+    
+      res.status(200).json(orders);
+  } catch (error) {
+     
+      errorHandler(error, req, res);
+  }
+};
+
+
+
+
+
+

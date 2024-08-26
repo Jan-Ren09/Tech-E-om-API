@@ -11,6 +11,8 @@ const productRoutes = require("./routes/product");
 // Cart
 const cartRoutes = require("./routes/cart");
 
+const orderRoutes = require("./routes/order");
+
 //[SECTION] Environment Setup
 //const port = 4000;
 require('dotenv').config();
@@ -50,6 +52,8 @@ app.use("/products", productRoutes);
 
 // Cart routes
 app.use("/cart", cartRoutes);
+//
+app.use("/order", orderRoutes);
 
 
 //[SECTION] Server Gateway Response
