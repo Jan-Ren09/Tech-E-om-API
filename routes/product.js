@@ -15,6 +15,12 @@ router.get('/active', productController.retrieveAllActive);
 // Retrieve Single Product
 router.get("/:productId", productController.retrieveOne);
 
+// Filter products by name and price range
+router.post('/search-by-name',  productController.searchByName);
+
+// Filter products by name and price range
+router.post('/search-by-price', productController.searchByPrice);
+
 // Update Product Information
 router.patch("/:productId/update", verify, verifyAdmin, productController.updateProduct)
 
@@ -23,5 +29,6 @@ router.patch("/:productId/archive", verify, verifyAdmin, productController.archi
 
 // Activate Product
 router.patch("/:productId/activate", verify, verifyAdmin, productController.activateProduct);
+
 
 module.exports = router;

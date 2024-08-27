@@ -125,3 +125,68 @@ module.exports.activateProduct = async (req, res) => {
         errorHandler(error, req, res);
     }
 };
+
+module.exports.searchByPrice = async (req, res) => {
+    const { minPrice, maxPrice } = req.body;
+  
+    try {
+        // Build the filter query
+        let filter = {};
+        
+        if (minPrice !== undefined) {
+            const min = parseFloat(minPrice);
+            if (!isNaN(min)) {
+                filter.price = { ...filter.price, $gte: min }; // Greater than or equal to minPrice
+            }
+        }
+    
+        if (maxPrice !== undefined) {
+            const max = parseFloat(maxPrice);
+            if (!isNaN(max)) {
+                filter.price = { ...filter.price, $lte: max }; // Less than or equal to maxPrice
+            } 
+        }
+    
+        // Log the constructed filter query
+        console.log('Constructed Filter Query:', filter);
+    
+        const products = await Product.find(filter);
+
+        // Check if any products were found
+        if (products.length === 0) {
+            return res.status(404).send({ message: 'No products found within that price range' });
+        }
+    
+        return res.status(200).json(products);
+    } catch (error) {
+        console.error('Error:', error);
+        errorHandler(error, req, res);
+    }
+};
+
+
+
+
+module.exports.searchByName = async (req, res) => {
+    try {
+        const { name } = req.body;
+
+        if (!name) {
+            return res.status(400).send({ message: 'Please enter the product name' });
+        }
+
+        const filter = { name: { $regex: name, $options: 'i' } };
+        const products = await Product.find(filter);
+
+        if (products.length === 0) {
+            return res.status(404).send({ message: 'No products found with that name' });
+        }
+
+        return res.status(200).json(products);
+    } catch (error) {
+        console.error('Error:', error);
+        errorHandler(error, req, res);
+    }
+};
+
+

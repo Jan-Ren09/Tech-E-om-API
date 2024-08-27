@@ -1,41 +1,91 @@
-const Cart = require('../models/Cart');
-const Order = require('../models/Order');
+const Order = require('../models/Order'); // Adjust the path as needed
 const Product = require('../models/Product'); // Assuming you have a Product model
 const { errorHandler } = require('../auth');
 
+// Controller function to create an order
 module.exports.createOrder = async (req, res) => {
-  try {
-    const userId = req.user._id; // Assuming user ID is stored in req.user
+    try {
+      if (req.user.isAdmin) {
+        return res.status(403).send({ message: 'Action not allowed, User is an Admin' });
+      }
+        const { checkOutItems } = req.body;
+        const userId = req.user.id; 
 
-    // Retrieve the user's cart
-    const cart = await Cart.findOne({ userId });
+   
+        if (!checkOutItems || !checkOutItems.length) {
+            return res.status(400).json({ error: 'No Items to Checkout' });
+        }
 
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ error: 'Cart is empty' });
-    }
+        let orderItems = [];
+        let totalAmount = 0;
 
-    // Extract product orders from the cart
-    const productOrders = cart.items.map(item => ({
-      productId: item.productId.toString(),
-      quantity: item.quantity,
-    }));
+    
+        for (let item of checkOutItems) {
+            const product = await Product.findById(item.productId);
+            if (!product) {
+                return res.status(404).json({ error: `Product with ID ${item.productId} not found` });
+            }
 
-    // Fetch all product details
-    const products = await Product.find({ _id: { $in: productOrders.map(p => p.productId) } });
+            const orderItem = {
+                productId: product._id,
+                quantity: item.quantity,
+                price: product.price,
+            };
 
-    // Create a new order instance
-    const order = new Order({ userId, productOrders });
+            orderItems.push(orderItem);
+            totalAmount += product.price * item.quantity;
+        }
 
-    // Calculate totals and save the order
-    await order.updateTotalsAndSave(products);
+        // Create a new order instance
+        const newOrder = new Order({
+            userId,
+            orderItems,
+            totalAmount
+        });
 
-    // Optionally, clear the cart after creating the order
-    cart.items = [];
-    await cart.save();
+        // Save the order to the database
+        const savedOrder = await newOrder.save();
 
-    return res.status(201).json(order);
-  } catch (error) {
-    console.error('Error creating order:', error);
-    return res.status(500).json({ error: errorHandler(error) });
+      
+        res.status(201).json({ message: 'Ordered successfully', order: savedOrder });
+    } catch (error) {
+        errorHandler(error, req, res)
+      }
+};
+
+module.exports.getAllOrders = async (req, res) => {
+try {
+  const orders = await Order.find({});
+
+        res.status(200).send({orders : orders});
+
+}catch (error) {
+    errorHandler(error, req, res)
   }
 };
+
+
+
+module.exports.getUserOrders = async (req, res) => {
+  try {
+     
+      const orders = await Order.find({ userId: req.user.id });
+
+      
+      if (!orders.length) {
+          return res.status(404).json({ message: `No orders found for user ${req.user.id}` });
+      }
+
+    
+      res.status(200).send({orders : orders});
+  } catch (error) {
+     
+      errorHandler(error, req, res);
+  }
+};
+
+
+
+
+
+
