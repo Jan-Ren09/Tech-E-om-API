@@ -66,7 +66,9 @@ module.exports.addToCart = (req, res) => {
         // Recalculate total price
         cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
         return cart.save()
-        .then(updatedCart => res.status(200).send(updatedCart));
+        .then(updatedCart => res.status(200).send({
+          message : `Item added to cart successfully`,
+          cart : updatedCart}));
       } else {
         // If the cart doesn't exist, create a new one
         const newCart = new Cart({
@@ -80,7 +82,8 @@ module.exports.addToCart = (req, res) => {
         });
         
         return newCart.save()
-        .then(savedCart => res.status(201).send(savedCart));
+        .then(savedCart => res.status(201).send({message : `Item added to cart successfully`,
+          Cart : savedCart}));
       }
     })
     .catch(err => res.status(500).send({ message: 'Error retrieving cart', error: err.message }));
@@ -131,7 +134,9 @@ module.exports.updateProductQuantity = async (req, res) => {
     
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
     const updatedCart = await cart.save();
-    return res.status(200).json(updatedCart);
+    return res.status(200).send({
+      message : "Item quantity updated successfully",
+      updatedCart : updatedCart});
   } catch (error) {
     errorHandler(error, req, res);
   }
