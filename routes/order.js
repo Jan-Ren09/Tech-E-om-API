@@ -7,7 +7,7 @@ router.post('/checkout', verify, orderController.createOrder);
 
 router.get('/get-all', verify, verifyAdmin, orderController.getAllOrders);
 
-router.get('/userOrders', verify, orderController.getUserOrders);
+router.get('/my-orders', verify, orderController.getUserOrders);
 
 
 

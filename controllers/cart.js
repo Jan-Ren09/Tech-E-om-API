@@ -140,9 +140,12 @@ module.exports.updateProductQuantity = async (req, res) => {
 
 // Remove Product from Cart
 module.exports.removeProduct = async (req, res) => {
-  const { productId } = req.body;
+  const { productId } = req.params;
 
   try {
+    if (req.user.isAdmin){
+      return res.status(403).send({ message: 'Action not allowed: user is an Admin' });
+    }
     const cart = await Cart.findOne({userId: req.user.id});
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
@@ -161,7 +164,8 @@ module.exports.removeProduct = async (req, res) => {
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
 
     const updatedCart = await cart.save();
-    return res.status(200).json(updatedCart);
+    return res.status(200).send({message : `Item removed from cart successfully`,
+      updatedCart});
   } catch (error) {
     errorHandler(error, req, res);
   }
@@ -171,6 +175,9 @@ module.exports.removeProduct = async (req, res) => {
 module.exports.clearCart = async (req, res) => {
 
   try {
+    if (req.user.isAdmin){
+      return res.status(403).send({ message: 'Action not allowed: user is an Admin' });}
+
     const cart = await Cart.findOne({ userId: req.user.id });
 
     if(!cart) {
@@ -182,8 +189,10 @@ module.exports.clearCart = async (req, res) => {
     cart.totalPrice = 0
 
     await cart.save();
-    return res.status(200).send({ message: 'Cart cleared Successfully'})
-  } catch (err) {
-    return res.status(500).send({ message: 'Error clearing cart', error: err.message})
+    return res.status(200).send({ message: 'Cart cleared Successfully', 
+      cart
+    })
+  } catch (error) {
+    errorHandler(error, req, res);
   }
 };
