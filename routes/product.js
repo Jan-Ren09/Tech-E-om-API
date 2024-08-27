@@ -12,11 +12,14 @@ router.get('/all', verify, verifyAdmin, productController.retrieveAllProduct);
 // Retrieve All Active Product
 router.get('/active', productController.retrieveAllActive);
 
-// Filter products by name and price range
-router.get('/filter-products',  productController.filterProducts);
-
 // Retrieve Single Product
 router.get("/:productId", productController.retrieveOne);
+
+// Filter products by name and price range
+router.post('/search-by-name',  productController.searchByName);
+
+// Filter products by name and price range
+router.post('/search-by-price', productController.searchByPrice);
 
 // Update Product Information
 router.patch("/:productId/update", verify, verifyAdmin, productController.updateProduct)
