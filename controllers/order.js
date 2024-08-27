@@ -13,7 +13,7 @@ module.exports.createOrder = async (req, res) => {
 
    
         if (!checkOutItems || !checkOutItems.length) {
-            return res.status(400).json({ error: 'checkOutItems are required' });
+            return res.status(400).json({ error: 'No Items to Checkout' });
         }
 
         let orderItems = [];
@@ -47,7 +47,7 @@ module.exports.createOrder = async (req, res) => {
         const savedOrder = await newOrder.save();
 
       
-        res.status(201).json({ message: 'Order created successfully', order: savedOrder });
+        res.status(201).json({ message: 'Ordered successfully', order: savedOrder });
     } catch (error) {
         errorHandler(error, req, res)
       }
@@ -57,7 +57,7 @@ module.exports.getAllOrders = async (req, res) => {
 try {
   const orders = await Order.find({});
 
-        res.status(200).json(orders);
+        res.status(200).send({orders : orders});
 
 }catch (error) {
     errorHandler(error, req, res)
@@ -77,7 +77,7 @@ module.exports.getUserOrders = async (req, res) => {
       }
 
     
-      res.status(200).json(orders);
+      res.status(200).send({orders : orders});
   } catch (error) {
      
       errorHandler(error, req, res);
