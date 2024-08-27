@@ -9,11 +9,6 @@ const { verify, isLoggedIn, verifyAdmin } = require("../auth");
 //[SECTION] Routing Component
 const router = express.Router();
 
-//[CHAT GPT INTEGRATION SECTION]
-router.post('/reset-password', verify, userController.resetPassword);
-
-router.put('/profile', verify, userController.updateProfile);
-
 //[SECTION] Google Login
 //[SECTION] Route for initiating the Google OAuth consent screen
 // router.get('/google',

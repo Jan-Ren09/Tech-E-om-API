@@ -240,9 +240,9 @@ module.exports.makeUserAdmin = async (req, res) => {
         await user.save();
 
         res.status(200).json({ message: 'User has been successfully updated to an admin.' });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error' });
-    }
+    } catch (error) {
+		errorHandler(error, req, res);
+	  }
 };
 
 
@@ -261,6 +261,6 @@ module.exports.changePassword = async (req, res) => {
 	  res.status(200).json({ message: 'Password changed successfully' });
 	} catch (error) {
 	  console.error(error);
-	  res.status(500).json({ message: 'Internal server error' });
+	  errorHandler(error, req, res);
 	}
 };

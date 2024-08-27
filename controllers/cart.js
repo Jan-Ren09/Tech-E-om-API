@@ -17,7 +17,7 @@ module.exports.getCart = async (req, res) => {
     return res.status(200).send(cart);
 
   } catch (error) {
-    return res.status(500).send({ message: 'Error retrieving cart', error: error.message });
+    errorHandler(error, req, res);
   }
 };
 
@@ -85,7 +85,7 @@ module.exports.addToCart = (req, res) => {
     })
     .catch(err => res.status(500).send({ message: 'Error retrieving cart', error: err.message }));
   })
-  .catch(err => res.status(500).send({ message: 'Error retrieving product', error: err.message }));
+  .catch(error => errorHandler(error, req, res));
 };
 
 
