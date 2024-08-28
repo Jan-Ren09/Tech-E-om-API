@@ -65,6 +65,10 @@ try {
 
 module.exports.getUserOrders = async (req, res) => {
   try {
+
+    if (req.user.isAdmin) {
+      return res.status(403).send({ message: 'Action not allowed, User is an Admin' });
+    }
      
       const orders = await Order.find({ userId: req.user.id });
 
