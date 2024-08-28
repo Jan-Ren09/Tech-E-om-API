@@ -1,6 +1,6 @@
 # Application Name: Demo-app
 
-## Team Membders:
+## Team Members:
 1. Dela Cruz, John Kenneth Z.
 2. De Las Alas, Jan Ren
 
@@ -18,8 +18,6 @@
 
     * email: "delasalas@gmail.com
     * password: delasalas12345
-
-
 
     * email: consumer@mail.com
     * password: password1234
