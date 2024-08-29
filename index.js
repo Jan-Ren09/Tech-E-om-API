@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 const corsOptions = {
-	origin: ['http://localhost:8000'], // Allow requests from this origin (The client's URL) the origin is in Array form if there are multiple origins
+	origin: ['http://localhost:3000'], // Allow requests from this origin (The client's URL) the origin is in Array form if there are multiple origins
 	//methods: '*', //Allow only specified HTTP methods // optional only if you want to restrict the methods
 	// allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers// optional only if you want to restrict the headers
 	credentials: true,
@@ -45,15 +45,15 @@ mongoose.connection.once('open', () => console.log('Now connected to MongoDB Atl
 //http://localhost:4000/users
 // Defines the "/users" string to be included for all user routes defined in the "user" route file
 // Groups all routes in userRoutes under "/users"
-app.use("/users", userRoutes);
+app.use("/b7/users", userRoutes);
 
 //[SECTION] Activity: Add course routes
-app.use("/products", productRoutes);
+app.use("/b7/products", productRoutes);
 
 // Cart routes
-app.use("/cart", cartRoutes);
+app.use("/b7/cart", cartRoutes);
 //
-app.use("/order", orderRoutes);
+app.use("/b7/order", orderRoutes);
 
 
 //[SECTION] Server Gateway Response
