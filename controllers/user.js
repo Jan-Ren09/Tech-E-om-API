@@ -55,43 +55,49 @@ module.exports.resetPassword = async (req, res) => {
 };
 
 
-
-
-
-
 module.exports.registerUser = (req, res) => {
-	//Creates a variable "newUser" and instantitates a new "User" object using the mongoose model we've provided
-	// Uses the information from the request body to provide all the necessary information.
-	// Checks if the email is in the right format
-    if (!req.body.email.includes("@")){
-        return res.status(400).send({ message: 'Invalid email format' });
-    }
-    // Checks if the mobile number has the correct number of characters
-    else if (req.body.mobileNo.length !== 11){
-        return res.status(400).send({ message: 'Mobile number is invalid' });
-    }
-    // Checks if the password has atleast 8 characters
-    else if (req.body.password.length < 8) {
-        return res.status(400).send({ message: 'Password must be atleast 8 characters long' });
-    // If all needed requirements are achieved
-    } else {
-        let newUser = new User({
-            firstName : req.body.firstName,
-            lastName : req.body.lastName,
-            email : req.body.email,
-            mobileNo : req.body.mobileNo,
-            password : bcrypt.hashSync(req.body.password, 10)
-        })
+  // Checks if the email is in the correct format
+  if (!req.body.email.includes("@")) {
+    return res.status(400).send({ message: 'Invalid email format' });
+  }
+  // Checks if the mobile number has the correct number of characters
+  else if (req.body.mobileNo.length !== 11) {
+    return res.status(400).send({ message: 'Mobile number is invalid' });
+  }
+  // Checks if the password has at least 8 characters
+  else if (req.body.password.length < 8) {
+    return res.status(400).send({ message: 'Password must be at least 8 characters long' });
+  }
+  // Check if the email is already registered
+  else {
+    User.findOne({ email: req.body.email })
+      .then(existingUser => {
+        if (existingUser) {
+          return res.status(409).send({ message: 'Email is already registered' });
+		  
+        } else {
+          // If the email is not registered, create a new user
+          let newUser = new User({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            mobileNo: req.body.mobileNo,
+            password: bcrypt.hashSync(req.body.password, 10)
+          });
 
-	    return newUser.save()
-	            // if all needed requirements are achieved, send a success message 'User registered successfully' and return the newly created user.
-	            .then((result) => res.status(201).send({
-	                message: 'User registered successfully',
-	                user: result
-	            }))
-	            .catch(error => errorHandler(error, req, res));
-	        }
-	    };
+          // Save the new user to the database
+          return newUser.save()
+            .then(result => res.status(201).send({
+              message: 'User registered successfully',
+              user: result
+            }))
+            .catch(error => errorHandler(error, req, res));
+        }
+      })
+      .catch(error => errorHandler(error, req, res));
+  }
+};
+
 
 //[SECTION] User authentication
 /*
