@@ -60,6 +60,12 @@ module.exports.resetPassword = async (req, res) => {
 
 
 module.exports.registerUser = (req, res) => {
+	try {
+	
+	exsistingEmail = User.find({email : req.body.email});
+	if (exsistingEmail){
+		return res.status(403).send({ message: 'User email already registered' })
+	};
 	//Creates a variable "newUser" and instantitates a new "User" object using the mongoose model we've provided
 	// Uses the information from the request body to provide all the necessary information.
 	// Checks if the email is in the right format
@@ -91,7 +97,10 @@ module.exports.registerUser = (req, res) => {
 	            }))
 	            .catch(error => errorHandler(error, req, res));
 	        }
-	    };
+	    
+	}catch (error) {
+        errorHandler(error, req, res);
+	}};
 
 //[SECTION] User authentication
 /*
