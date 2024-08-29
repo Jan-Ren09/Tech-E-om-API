@@ -1,11 +1,11 @@
 {
-    "url": "http://ec2-3-142-164-9.us-east-2.compute.amazonaws.com/",
+    "url": "http://ec2-3-142-164-9.us-east-2.compute.amazonaws.com/b7",
     "routesPrefix": {
 
-        "users": "b7/users",
-        "products": "b7/products",
-        "orders": "b7/oder",
-        "cart": "b7/cart"
+        "users": "/b7/users",
+        "products": "/b7/products",
+        "orders": "/b7/oder",
+        "cart": "/b7/cart"
 
     }
 }
