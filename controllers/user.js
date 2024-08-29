@@ -57,46 +57,45 @@ module.exports.resetPassword = async (req, res) => {
 
 module.exports.registerUser = async (req, res) => {
 	try {
-
-	exsistingEmail = User.find({email : req.body.email});
-	if (exsistingEmail){
-		return res.status(403).send({ message: 'User email already registered' })
-	};
-	//Creates a variable "newUser" and instantitates a new "User" object using the mongoose model we've provided
-	// Uses the information from the request body to provide all the necessary information.
-	// Checks if the email is in the right format
-    if (!req.body.email.includes("@")){
-        return res.status(400).send({ message: 'Invalid email format' });
-    }
-    // Checks if the mobile number has the correct number of characters
-    else if (req.body.mobileNo.length !== 11){
-        return res.status(400).send({ message: 'Mobile number is invalid' });
-    }
-    // Checks if the password has atleast 8 characters
-    else if (req.body.password.length < 8) {
-        return res.status(400).send({ message: 'Password must be atleast 8 characters long' });
-    // If all needed requirements are achieved
-    } else {
-        let newUser = new User({
-            firstName : req.body.firstName,
-            lastName : req.body.lastName,
-            email : req.body.email,
-            mobileNo : req.body.mobileNo,
-            password : bcrypt.hashSync(req.body.password, 10)
-        })
-
-	    return newUser.save()
-	            // if all needed requirements are achieved, send a success message 'User registered successfully' and return the newly created user.
-	            .then((result) => res.status(201).send({
-	                message: 'User registered successfully',
-	                user: result
-	            }))
-	            .catch(error => errorHandler(error, req, res));
-	        }
-	    
-	}catch (error) {
-        errorHandler(error, req, res);
-	}};
+	  // async and await
+	  const existingUser = await User.findOne({ email: req.body.email });
+	  if (existingUser) {
+		return res.status(409).send({ message: 'User email already registered' });
+	  }
+  
+	  // Checks if the email is in the correct format
+	  if (!req.body.email.includes("@")) {
+		return res.status(400).send({ message: 'Invalid email format' });
+	  }
+	  // Checks if the mobile number has the correct number of characters
+	  else if (req.body.mobileNo.length !== 11) {
+		return res.status(400).send({ message: 'Mobile number is invalid' });
+	  }
+	  // Checks if the password has at least 8 characters
+	  else if (req.body.password.length < 8) {
+		return res.status(400).send({ message: 'Password must be at least 8 characters long' });
+	  } else {
+		// If all needed requirements are met, create the new user
+		let newUser = new User({
+		  firstName: req.body.firstName,
+		  lastName: req.body.lastName,
+		  email: req.body.email,
+		  mobileNo: req.body.mobileNo,
+		  password: bcrypt.hashSync(req.body.password, 10)
+		});
+  
+		// Save the new user to the database
+		return newUser.save()
+		  .then(result => res.status(201).send({
+			message: 'User registered successfully',
+			user: result
+		  }))
+		  .catch(error => errorHandler(error, req, res));
+	  }
+	} catch (error) {
+	  errorHandler(error, req, res);
+	}
+  };
 
 //[SECTION] User authentication
 /*
