@@ -25,7 +25,7 @@
 
 ## Features: 
 
-### Features by Student-1 Dela Cruz, John Kenneth 
+### Features by Dela Cruz, John Kenneth 
 
 #### Product Resources:
 * Product Model
