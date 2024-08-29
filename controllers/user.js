@@ -55,13 +55,9 @@ module.exports.resetPassword = async (req, res) => {
 };
 
 
-
-
-
-
 module.exports.registerUser = (req, res) => {
 	try {
-	
+
 	exsistingEmail = User.find({email : req.body.email});
 	if (exsistingEmail){
 		return res.status(403).send({ message: 'User email already registered' })
