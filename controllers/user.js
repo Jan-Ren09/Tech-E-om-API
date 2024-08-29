@@ -55,7 +55,7 @@ module.exports.resetPassword = async (req, res) => {
 };
 
 
-module.exports.registerUser = (req, res) => {
+module.exports.registerUser = async (req, res) => {
 	try {
 
 	exsistingEmail = User.find({email : req.body.email});
