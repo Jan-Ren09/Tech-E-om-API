@@ -1,5 +1,5 @@
 {
-    "url": "http://ec2-3-142-164-9.us-east-2.compute.amazonaws.com/b7",
+    "url": "http://ec2-3-142-164-9.us-east-2.compute.amazonaws.com",
     "routesPrefix": {
 
         "users": "/b7/users",
