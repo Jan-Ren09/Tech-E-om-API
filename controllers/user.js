@@ -141,8 +141,8 @@ module.exports.loginUser = (req, res) => {
 
 				//Passwords do not match simply return the boolean value of false.
 				} else {
-					// Send status 401
-					 return res.status(401).send({ message: 'Email and password do not match' });
+					
+					 return res.status(404).send({ message: 'Email and password do not match' });
 				}
 
 			}
@@ -218,7 +218,7 @@ module.exports.getProfile = (req, res) => {
 
         if(!user){
             // if the user has invalid token, send a message 'invalid signature'.
-            return res.status(403).send({ message: 'invalid signature' })
+            return res.status(404).send({ message: 'invalid signature' })
         }else {
             // if the user is found, return the user.
             user.password = "";
