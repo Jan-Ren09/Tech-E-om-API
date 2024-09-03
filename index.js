@@ -53,7 +53,7 @@ app.use("/b7/products", productRoutes);
 // Cart routes
 app.use("/b7/cart", cartRoutes);
 //
-app.use("/b7/order", orderRoutes);
+app.use("/b7/orders", orderRoutes);
 
 
 //[SECTION] Server Gateway Response
