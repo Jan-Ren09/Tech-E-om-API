@@ -86,7 +86,7 @@ module.exports.updateProduct = async (req, res) => {
         if (product) {
             return res.status(200).send({ success: true, message: 'Product updated successfully'});
         } else {
-            return res.status(404).send({ message: 'Product not found' });
+            return res.status(404).send({ error: 'Product not found' });
         }
     } catch (error) {
         errorHandler(error, req, res);
