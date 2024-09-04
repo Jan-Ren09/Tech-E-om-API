@@ -84,7 +84,7 @@ module.exports.loginUser = (req, res) => {
 			//User does not exist, return false
 			if(result == null) {
 				// Send status 404
-				return res.status(400).send({ error: 'Invalid Email' });
+				return res.status(400).send({ error: 'No email found' });
 
 			//User exists		
 			} else {
@@ -111,7 +111,7 @@ module.exports.loginUser = (req, res) => {
 		})
 		.catch(error => errorHandler(error, req, res));
 	} else{
-		return res.status(404).send({ error: 'No email found' });
+		return res.status(404).send({ error: 'invalid email' });
 	}
 }
 
