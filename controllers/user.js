@@ -179,7 +179,7 @@ module.exports.makeUserAdmin = async (req, res) => {
 
         res.status(200).json({ updatedUser: user});
     } catch (error) {
-		res.status(500).send({error});
+		res.status(500).send({error: "Failed in Find", details : error});
 	  }
 };
 
