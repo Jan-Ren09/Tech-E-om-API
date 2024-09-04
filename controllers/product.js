@@ -96,7 +96,7 @@ module.exports.archiveProduct = async (req, res) => {
 
         if (product) {
             if (!product.isActive) {
-                return res.status(200).send({ message: 'Product already archived', product });
+                return res.status(200).send({ message: 'Product already archived', archivedProduct : product });
             }
             return res.status(200).send({ success: true, message: 'Product archived successfully' });
         } else {
@@ -115,7 +115,7 @@ module.exports.activateProduct = async (req, res) => {
 
         if (product) {
             if (product.isActive) {
-                return res.status(200).send({ message: 'Product already activated', product });
+                return res.status(200).send({ message: 'Product already active', activateProduct : product });
             }
             return res.status(200).send({ success: true, message: 'Product activated successfully' });
         } else {
