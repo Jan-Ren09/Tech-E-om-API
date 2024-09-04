@@ -84,7 +84,7 @@ module.exports.updateProduct = async (req, res) => {
         console.log("Product update result:", product);
 
         if (product) {
-            return res.status(200).send({ success: true, message: 'Product updated successfully', product });
+            return res.status(200).send({ success: true, message: 'Product updated successfully'});
         } else {
             return res.status(404).send({ message: 'Product not found' });
         }
