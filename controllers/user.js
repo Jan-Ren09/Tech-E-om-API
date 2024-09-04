@@ -148,7 +148,7 @@ module.exports.getProfile = (req, res) => {
 
         if(!user){
             // if the user has invalid token, send a message 'invalid signature'.
-            return res.status(404).send({ message: 'invalid signature' })
+            return res.status(404).send({ error: 'User not found' })
         }else {
             // if the user is found, return the user.
             user.password = "";
