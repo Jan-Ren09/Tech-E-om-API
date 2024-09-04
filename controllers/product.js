@@ -71,15 +71,20 @@ module.exports.retrieveOne = async (req, res) => {
 // Update product
 module.exports.updateProduct = async (req, res) => {
     try {
+        const productId = req.params.productId;
+        console.log("Updating product with ID:", productId);
+
         const updatedProduct = {
             name: req.body.name,
             description: req.body.description,
             price: req.body.price,
         };
 
-        const product = await Product.findByIdAndUpdate(req.params.productId, updatedProduct, { new: true });
+        const product = await Product.findByIdAndUpdate(productId, updatedProduct, { new: true });
+        console.log("Product update result:", product);
+
         if (product) {
-            return res.status(200).send({ success: true, message: 'Product updated successfully'});
+            return res.status(200).send({ success: true, message: 'Product updated successfully', product });
         } else {
             return res.status(404).send({ message: 'Product not found' });
         }
@@ -110,17 +115,21 @@ module.exports.archiveProduct = async (req, res) => {
 // Activate Product
 module.exports.activateProduct = async (req, res) => {
     try {
-        const updateActiveField = { isActive: true };
-        const product = await Product.findByIdAndUpdate(req.params.productId, updateActiveField, { new: true });
+        const product = await Product.findById(req.params.productId);
 
-        if (product) {
-            if (product.isActive) {
-                return res.status(200).send({ message: 'Product already active', activateProduct : product });
-            }
-            return res.status(200).send({ success: true, message: 'Product activated successfully' });
-        } else {
+        if (!product) {
             return res.status(404).send({ message: 'Product not found' });
         }
+
+        if (product.isActive) {
+            return res.status(200).send({ message: 'Product is already active', activateProduct: product });
+        }
+
+        product.isActive = true;
+        const updatedProduct = await product.save();
+
+        return res.status(200).send({ success: true, message: 'Product activated successfully', activateProduct: updatedProduct });
+
     } catch (error) {
         errorHandler(error, req, res);
     }
