@@ -99,7 +99,7 @@ module.exports.archiveProduct = async (req, res) => {
         const product = await Product.findById(req.params.productId);
 
         if (!product) {
-            return res.status(404).send({ message: 'Product not found' });
+            return res.status(404).send({ error: 'Product not found' });
         }
 
         if (!product.isActive) {
