@@ -111,7 +111,7 @@ module.exports.loginUser = (req, res) => {
 		})
 		.catch(error => errorHandler(error, req, res));
 	} else{
-		return res.status(404).send({ error: 'invalid email' });
+		return res.status(404).send({ error: 'Invalid email' });
 	}
 }
 
