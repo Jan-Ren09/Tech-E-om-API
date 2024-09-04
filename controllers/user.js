@@ -83,7 +83,7 @@ module.exports.loginUser = (req, res) => {
 
 			//User does not exist, return false
 			if(result == null) {
-				// Send status 404
+				
 				return res.status(401).send({ error: 'No email found' });
 
 			//User exists		
@@ -97,7 +97,7 @@ module.exports.loginUser = (req, res) => {
 
 
 					// Send status 200
-					return res.status(200).send({
+					return res.status(200).send({access : true,
                         access : auth.createAccessToken(result)
                         })
 
