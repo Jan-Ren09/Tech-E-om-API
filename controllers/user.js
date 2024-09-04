@@ -160,7 +160,7 @@ module.exports.getProfile = (req, res) => {
 				email: user.email,
 				isAdmin : user.isAdmin,
 				mobileNo: user.mobileNo,
-				__v : user.__v
+				__v : user._
 			}});
         }  
     })
@@ -182,7 +182,7 @@ module.exports.makeUserAdmin = async (req, res) => {
         // Save the updated user
         await user.save();
 
-        res.status(200).json({ updatedUser: {user}});
+        res.status(200).json({ updatedUser: user});
     } catch (error) {
 		errorHandler(error, req, res);
 	  }
