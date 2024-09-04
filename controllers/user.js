@@ -84,7 +84,7 @@ module.exports.loginUser = (req, res) => {
 			//User does not exist, return false
 			if(result == null) {
 				// Send status 404
-				return res.status(404).send({ message: 'No email found' });
+				return res.status(404).send({ error: 'No email found' });
 
 			//User exists		
 			} else {
@@ -171,10 +171,6 @@ module.exports.makeUserAdmin = async (req, res) => {
         // Find the user by the id provided in the URL params
         const user = await User.findById(req.params.id);
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
         // Update the user's role to admin
         user.isAdmin = true;
 
@@ -183,7 +179,7 @@ module.exports.makeUserAdmin = async (req, res) => {
 
         res.status(200).json({ updatedUser: user});
     } catch (error) {
-		errorHandler(error, req, res);
+		res.status(500).send({error});
 	  }
 };
 
@@ -200,7 +196,7 @@ module.exports.changePassword = async (req, res) => {
 	  await User.findByIdAndUpdate(id, { password: hashedPassword });
   
 	  // Sending a success response
-	  res.status(200).json({ message: 'Password changed successfully' });
+	  res.status(200).json({ message: 'Password reset successfully' });
 	} catch (error) {
 	  console.error(error);
 	  errorHandler(error, req, res);
