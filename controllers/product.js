@@ -100,12 +100,13 @@ module.exports.archiveProduct = async (req, res) => {
         const product = await Product.findByIdAndUpdate(req.params.productId, updateActiveField, { new: true });
 
         if (product) {
-            if (!product.isActive) {
+            if (product.isActive) {
+                return res.status(200).send({ success: true, message: 'Product archived successfully' });
+            } else {
                 return res.status(200).send({ message: 'Product already archived', archivedProduct : product });
             }
-            return res.status(200).send({ success: true, message: 'Product archived successfully' });
         } else {
-            return res.status(404).send({ message: 'Product not found' });
+            return res.status(404).send({ error: 'Product not found' });
         }
     } catch (error) {
         errorHandler(error, req, res);
@@ -118,7 +119,7 @@ module.exports.activateProduct = async (req, res) => {
         const product = await Product.findById(req.params.productId);
 
         if (!product) {
-            return res.status(404).send({ message: 'Product not found' });
+            return res.status(404).send({ error: 'Product not found' });
         }
 
         if (product.isActive) {
@@ -128,7 +129,7 @@ module.exports.activateProduct = async (req, res) => {
         product.isActive = true;
         const updatedProduct = await product.save();
 
-        return res.status(200).send({ success: true, message: 'Product activated successfully', activateProduct: updatedProduct });
+        return res.status(200).send({ success: true, message: 'Product activated successfully'});
 
     } catch (error) {
         errorHandler(error, req, res);
