@@ -68,7 +68,7 @@ module.exports.addToCart = (req, res) => {
         return cart.save()
         .then(updatedCart => res.status(200).send({
           message : `Item added to cart successfully`,
-          cart : updatedCart}));
+          updatedCart : updatedCart}));
       } else {
         // If the cart doesn't exist, create a new one
         const newCart = new Cart({
@@ -83,7 +83,7 @@ module.exports.addToCart = (req, res) => {
         
         return newCart.save()
         .then(savedCart => res.status(201).send({message : `Item added to cart successfully`,
-          updatedCart : savedCart}));
+          cart : savedCart}));
       }
     })
     .catch(err => res.status(500).send({ message: 'Error retrieving cart', error: err.message }));
