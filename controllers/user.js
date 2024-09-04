@@ -97,15 +97,14 @@ module.exports.loginUser = (req, res) => {
 
 
 					// Send status 200
-					return res.status(200).send({ 
-                        message: 'User logged in successfully',
+					return res.status(200).send({
                         access : auth.createAccessToken(result)
                         })
 
 				//Passwords do not match simply return the boolean value of false.
 				} else {
 					
-					 return res.status(401).send({ message: 'Email and password do not match' });
+					 return res.status(401).send({ error: 'Email and password do not match' });
 				}
 
 			}
@@ -113,7 +112,7 @@ module.exports.loginUser = (req, res) => {
 		})
 		.catch(error => errorHandler(error, req, res));
 	} else{
-		return res.status(400).send({ message: 'Invalid email format' });
+		return res.status(400).send({ error: 'Invalid email format' });
 	}
 }
 
