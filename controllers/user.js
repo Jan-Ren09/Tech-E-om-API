@@ -97,7 +97,7 @@ module.exports.loginUser = (req, res) => {
 
 
 					// Send status 200
-					return res.status(200).send({access : true,
+					return res.status(200).send({
                         access : auth.createAccessToken(result)
                         })
 
