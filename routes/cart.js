@@ -7,7 +7,9 @@ const router = express.Router();
 router.get('/get-cart', verify, cartController.getCart);
 
 // Add to cart
-router.patch('/add-to-cart', verify, cartController.addToCart);
+router.post('/add-to-cart', verify, cartController.addToCart);
+
+router.get('/add-to-cart', verify, cartController.addToCart);
 
 // Change product quantity
 router.patch('/update-cart-quantity', verify, cartController.updateProductQuantity);
