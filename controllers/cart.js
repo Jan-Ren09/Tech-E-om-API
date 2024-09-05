@@ -96,13 +96,13 @@ module.exports.addToCart = (req, res) => {
 
 // Change Product Quantity
 module.exports.updateProductQuantity = async (req, res) => {
-  const { productId, quantity } = req.body;
+  const { productId, newQuantity } = req.body;
   
   if(req.user.isAdmin) {
     return res.status(403).send({ message: 'Admins cannot change cart quantity'});
   }
 
-  if (quantity < 0) {
+  if (newQuantity  < 0) {
     return res.status(400).send({ message: 'Quantity cannot be negative' });
   }
   
@@ -122,14 +122,14 @@ module.exports.updateProductQuantity = async (req, res) => {
       cart.cartItems.splice(itemIndex, 1);
     } else {
       const item = cart.cartItems[itemIndex];
-      item.quantity = quantity;
+      item.quantity = newQuantity ;
       
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).send({ message: 'Product not found' });
       }
       
-      item.subtotal = product.price * quantity;
+      item.subtotal = product.price * newQuantity;
     }
     
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
