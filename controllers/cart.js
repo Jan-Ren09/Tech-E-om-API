@@ -68,7 +68,7 @@ module.exports.addToCart = (req, res) => {
         return cart.save()
         .then(updatedCart => res.status(200).send({
           message : `Item added to cart successfully`,
-          cart : updatedCart}));
+          updatedCart : updatedCart}));
       } else {
         // If the cart doesn't exist, create a new one
         const newCart = new Cart({
@@ -83,7 +83,7 @@ module.exports.addToCart = (req, res) => {
         
         return newCart.save()
         .then(savedCart => res.status(201).send({message : `Item added to cart successfully`,
-          updatedCart : savedCart}));
+          cart : savedCart}));
       }
     })
     .catch(err => res.status(500).send({ message: 'Error retrieving cart', error: err.message }));
@@ -159,7 +159,7 @@ module.exports.removeProduct = async (req, res) => {
     const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
-      return res.status(404).send({ message: 'Product not found in cart' });
+      return res.status(404).send({ message: 'Item not found in cart' });
     }
 
     // Remove the product from the cart
@@ -169,8 +169,7 @@ module.exports.removeProduct = async (req, res) => {
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
 
     const updatedCart = await cart.save();
-    return res.status(200).send({message : `Item removed from cart successfully`,
-      updatedCart});
+    return res.status(200).send({message : `Item removed from cart successfully`, updatedCart : updatedCart});
   } catch (error) {
     errorHandler(error, req, res);
   }
@@ -186,7 +185,7 @@ module.exports.clearCart = async (req, res) => {
     const cart = await Cart.findOne({ userId: req.user.id });
 
     if(!cart) {
-      return res.status(404).send({ message: 'Cart not found'})
+      return res.status(404).send({ message: 'Cart not found', cart : cart})
     }
 
     // Need cart = 0 tapos total price = 0 
@@ -195,7 +194,7 @@ module.exports.clearCart = async (req, res) => {
 
     await cart.save();
     return res.status(200).send({ message: 'Cart cleared Successfully', 
-      cart
+      cart : cart
     })
   } catch (error) {
     errorHandler(error, req, res);
