@@ -181,7 +181,7 @@ module.exports.searchByName = async (req, res) => {
         const { productName  } = req.body;
 
         if (!productName ) {
-            return res.status(400).send({ message: 'Please enter the product name' });
+            return res.status(200).send({ message: 'Please enter the product name' });
         }
 
         const filter = { name: { $regex: productName , $options: 'i' } };
