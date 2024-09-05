@@ -148,7 +148,7 @@ module.exports.updateProductQuantity = async (req, res) => {
     // Save the updated cart and return success response
     const updatedCart = await cart.save();
     return res.status(200).send({
-      message : "Item quantity updated successfully",
+      message : "Item quantity update successfully",
       updatedCart: updatedCart
     });
 
