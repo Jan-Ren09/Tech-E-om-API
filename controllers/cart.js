@@ -128,7 +128,7 @@ module.exports.updateProductQuantity = async (req, res) => {
       // Check if product exists in the database
       const product = await Product.findById(productId);
       if (!product) {
-        return res.status(404).send({ message: 'Product not found' });
+        return res.status(404).send({ message: 'Failed to update, Product not found' });
       }
 
       // Ensure the product's price is a valid number
@@ -176,7 +176,7 @@ module.exports.removeProduct = async (req, res) => {
     const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
-      return res.status(200).send({ message: 'Item not found in cart' });
+      return res.status(200).send({ message: 'Failed to remove, Item not found in cart' });
     }
 
     // Remove the product from the cart
