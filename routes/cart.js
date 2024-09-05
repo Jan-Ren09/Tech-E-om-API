@@ -4,7 +4,7 @@ const {verify, verifyAdmin} = require("../auth");
 const router = express.Router();
 
 // Get cart
-router.get('/get-cart', verify, cartController.getCart);
+router.get('/add-to-cart', verify, cartController.getCart);
 
 // Add to cart
 router.post('/add-to-cart', verify, cartController.addToCart);
