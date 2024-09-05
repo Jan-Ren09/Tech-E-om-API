@@ -103,9 +103,9 @@ module.exports.updateProductQuantity = async (req, res) => {
     return res.status(403).send({ message: 'Admins cannot change cart quantity' });
   }
 
-  // Ensure new quantity is valid
-  if (typeof newQuantity !== 'number' || newQuantity < 0) {
-    return res.status(200).send({ message: 'Quantity must be a non-negative number' });
+  // Ensure new quantity is a valid, non-negative number
+  if (newQuantity === undefined || typeof newQuantity !== 'number' || newQuantity < 0) {
+    return res.status(400).send({ message: 'Quantity must be a non-negative number' });
   }
 
   try {
@@ -131,7 +131,7 @@ module.exports.updateProductQuantity = async (req, res) => {
         return res.status(404).send({ message: 'Failed to update, Product not found' });
       }
 
-      // Ensure the product's price is a valid number
+      // Ensure the product's price is valid
       if (typeof product.price !== 'number' || isNaN(product.price)) {
         return res.status(500).send({ message: 'Invalid product price' });
       }
@@ -148,7 +148,7 @@ module.exports.updateProductQuantity = async (req, res) => {
     // Save the updated cart and return success response
     const updatedCart = await cart.save();
     return res.status(200).send({
-      message : 'Item quantity update successfully',
+      message: 'Item quantity updated successfully',
       updatedCart: updatedCart
     });
 
