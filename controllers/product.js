@@ -16,11 +16,7 @@ module.exports.createProduct = async (req, res) => {
         });
 
         const result = await newProduct.save();
-        return res.status(201).send({
-            success: true,
-            message: 'Product has been added',
-            result,
-        });
+        return res.status(201).send(result);
     } catch (error) {
         errorHandler(error, req, res);
     }
@@ -182,13 +178,13 @@ module.exports.searchByPrice = async (req, res) => {
 
 module.exports.searchByName = async (req, res) => {
     try {
-        const { name } = req.body;
+        const { productName  } = req.body;
 
-        if (!name) {
+        if (!productName ) {
             return res.status(400).send({ message: 'Please enter the product name' });
         }
 
-        const filter = { name: { $regex: name, $options: 'i' } };
+        const filter = { name: { $regex: productName , $options: 'i' } };
         const products = await Product.find(filter);
 
         if (products.length === 0) {
