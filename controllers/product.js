@@ -16,11 +16,7 @@ module.exports.createProduct = async (req, res) => {
         });
 
         const result = await newProduct.save();
-        return res.status(201).send({
-            success: true,
-            message: 'Product has been added',
-            result,
-        });
+        return res.status(201).send(result);
     } catch (error) {
         errorHandler(error, req, res);
     }

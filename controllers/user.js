@@ -41,15 +41,15 @@ module.exports.registerUser = async (req, res) => {
   
 	  // Checks if the email is in the correct format
 	  if (!req.body.email.includes("@")) {
-		return res.status(400).send({ message: 'Invalid email format' });
+		return res.status(400).send({ error: 'Email Invalid' });
 	  }
 	  // Checks if the mobile number has the correct number of characters
 	  else if (req.body.mobileNo.length !== 11) {
-		return res.status(400).send({ message: 'Mobile number is invalid' });
+		return res.status(400).send({ error: 'Mobile number invalid' });
 	  }
 	  // Checks if the password has at least 8 characters
 	  else if (req.body.password.length < 8) {
-		return res.status(400).send({ message: 'Password must be at least 8 characters long' });
+		return res.status(400).send({ error: 'Password must be atleast 8 characters' });
 	  } else {
 		// If all needed requirements are met, create the new user
 		let newUser = new User({
@@ -62,10 +62,7 @@ module.exports.registerUser = async (req, res) => {
   
 		// Save the new user to the database
 		return newUser.save()
-		  .then(result => res.status(201).send({
-			message: 'User registered successfully',
-			user: result
-		  }))
+		  .then(result => res.status(201).send({ message: 'Registered Successfully'}))
 		  .catch(error => errorHandler(error, req, res));
 	  }
 	} catch (error) {
@@ -84,7 +81,7 @@ module.exports.loginUser = (req, res) => {
 			//User does not exist, return false
 			if(result == null) {
 				
-				return res.status(401).send({ error: 'No email found' });
+				return res.status(404).send({ error: 'No email found' });
 
 			//User exists		
 			} else {
@@ -178,8 +175,18 @@ module.exports.makeUserAdmin = async (req, res) => {
 
         res.status(200).json({ updatedUser: user});
     } catch (error) {
-		res.status(500).send({error: "Failed in Find", details : error});
-	  }
+		const errorDetails = {
+            stringValue: error?.stringValue || '',
+            valueType: error?.kind || '',
+            kind: error?.kind || '',
+            value: error?.value || '',
+            path: error?.path || '',
+            reason: error?.reason || '',
+            name: error?.name || '',
+            message: error.message
+	  };
+	  return res.status(500).send({ error: 'Failed in Find', details: errorDetails})
+	};
 };
 
 
@@ -195,7 +202,7 @@ module.exports.changePassword = async (req, res) => {
 	  await User.findByIdAndUpdate(id, { password: hashedPassword });
   
 	  // Sending a success response
-	  res.status(200).json({ message: 'Password reset successfully' });
+	  res.status(201).json({ message: 'Password reset successfully' });
 	} catch (error) {
 	  console.error(error);
 	  errorHandler(error, req, res);
