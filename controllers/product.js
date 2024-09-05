@@ -122,7 +122,7 @@ module.exports.activateProduct = async (req, res) => {
         }
 
         if (product.isActive) {
-            return res.status(200).send({ message: 'Product already active', activateProduct: product });
+            return res.status(200).send({ message: 'Product already actived', activateProduct: product });
         }
 
         product.isActive = true;
