@@ -148,7 +148,7 @@ module.exports.updateProductQuantity = async (req, res) => {
     // Save the updated cart and return success response
     const updatedCart = await cart.save();
     return res.status(200).send({
-      message: "Item quantity updated successfully",
+      message: "Item quantity update successfully",
       updatedCart: updatedCart
     });
 
@@ -186,7 +186,7 @@ module.exports.removeProduct = async (req, res) => {
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
 
     const updatedCart = await cart.save();
-    return res.status(200).send({message : `Item removed from cart successfully`, updatedCart : updatedCart});
+    return res.status(200).send({message : `Item remove from cart successfully`, updatedCart : updatedCart});
   } catch (error) {
     errorHandler(error, req, res);
   }
