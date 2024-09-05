@@ -118,7 +118,7 @@ module.exports.updateProductQuantity = async (req, res) => {
       return res.status(404).send({ message: 'Product not found in cart' });
     }
     
-    if (quantity === 0) {
+    if (newQuantity  === 0) {
       cart.cartItems.splice(itemIndex, 1);
     } else {
       const item = cart.cartItems[itemIndex];
