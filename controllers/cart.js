@@ -105,7 +105,7 @@ module.exports.updateProductQuantity = async (req, res) => {
 
   // Ensure new quantity is valid
   if (typeof newQuantity !== 'number' || newQuantity < 0) {
-    return res.status(400).send({ message: 'Quantity must be a non-negative number' });
+    return res.status(200).send({ message: 'Quantity must be a non-negative number' });
   }
 
   try {
@@ -176,7 +176,7 @@ module.exports.removeProduct = async (req, res) => {
     const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
-      return res.status(404).send({ message: 'Item not found in cart' });
+      return res.status(200).send({ message: 'Item not found in cart' });
     }
 
     // Remove the product from the cart
