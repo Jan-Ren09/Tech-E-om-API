@@ -68,7 +68,7 @@ module.exports.addToCart = (req, res) => {
         return cart.save()
         .then(updatedCart => res.status(200).send({
           message : `Item added to cart successfully`,
-          cart : updatedCart}));
+          updatedCart : updatedCart}));
       } else {
         // If the cart doesn't exist, create a new one
         const newCart = new Cart({
@@ -83,7 +83,7 @@ module.exports.addToCart = (req, res) => {
         
         return newCart.save()
         .then(savedCart => res.status(201).send({message : `Item added to cart successfully`,
-          updatedCart : savedCart}));
+          cart : savedCart}));
       }
     })
     .catch(err => res.status(500).send({ message: 'Error retrieving cart', error: err.message }));
@@ -96,51 +96,68 @@ module.exports.addToCart = (req, res) => {
 
 // Change Product Quantity
 module.exports.updateProductQuantity = async (req, res) => {
-  const { productId, quantity } = req.body;
-  
-  if(req.user.isAdmin) {
-    return res.status(403).send({ message: 'Admins cannot change cart quantity'});
+  const { productId, newQuantity } = req.body;
+
+  // Ensure non-admin users can perform this action
+  if (req.user.isAdmin) {
+    return res.status(403).send({ message: 'Admins cannot change cart quantity' });
   }
 
-  if (quantity < 0) {
-    return res.status(400).send({ message: 'Quantity cannot be negative' });
+  // Ensure new quantity is valid
+  if (typeof newQuantity !== 'number' || newQuantity < 0) {
+    return res.status(400).send({ message: 'Quantity must be a non-negative number' });
   }
-  
+
   try {
+    // Find user's cart
     const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
     }
-    
+
+    // Find product in the cart
     const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
-    
     if (itemIndex === -1) {
       return res.status(404).send({ message: 'Product not found in cart' });
     }
-    
-    if (quantity === 0) {
-      cart.cartItems.splice(itemIndex, 1);
+
+    // Handle product quantity update or removal
+    if (newQuantity === 0) {
+      cart.cartItems.splice(itemIndex, 1); // Remove item from cart
     } else {
-      const item = cart.cartItems[itemIndex];
-      item.quantity = quantity;
-      
+      // Check if product exists in the database
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).send({ message: 'Product not found' });
       }
-      
-      item.subtotal = product.price * quantity;
+
+      // Ensure the product's price is a valid number
+      if (typeof product.price !== 'number' || isNaN(product.price)) {
+        return res.status(500).send({ message: 'Invalid product price' });
+      }
+
+      // Update item quantity and subtotal
+      const item = cart.cartItems[itemIndex];
+      item.quantity = newQuantity;
+      item.subtotal = product.price * newQuantity;
     }
-    
+
+    // Recalculate total price for the cart
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
+
+    // Save the updated cart and return success response
     const updatedCart = await cart.save();
     return res.status(200).send({
-      message : "Item quantity updated successfully",
-      updatedCart : updatedCart});
+      message: "Item quantity updated successfully",
+      updatedCart: updatedCart
+    });
+
   } catch (error) {
-    errorHandler(error, req, res);
+    errorHandler(error, req, res); // Handle errors properly
   }
 };
+
+
 
 
 // Remove Product from Cart
