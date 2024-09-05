@@ -97,50 +97,54 @@ module.exports.addToCart = (req, res) => {
 // Change Product Quantity
 module.exports.updateProductQuantity = async (req, res) => {
   const { productId, newQuantity } = req.body;
-  
-  if(req.user.isAdmin) {
-    return res.status(403).send({ message: 'Admins cannot change cart quantity'});
+
+  if (req.user.isAdmin) {
+    return res.status(403).send({ message: 'Admins cannot change cart quantity' });
   }
 
-  if (newQuantity  < 0) {
+  if (newQuantity < 0) {
     return res.status(400).send({ message: 'Quantity cannot be negative' });
   }
-  
+
   try {
     const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
     }
-    
+
     const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
-    
     if (itemIndex === -1) {
       return res.status(404).send({ message: 'Product not found in cart' });
     }
-    
-    if (newQuantity  === 0) {
+
+    if (newQuantity === 0) {
       cart.cartItems.splice(itemIndex, 1);
     } else {
-      const item = cart.cartItems[itemIndex];
-      item.quantity = newQuantity ;
-      
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).send({ message: 'Product not found' });
       }
-      
+
+      const item = cart.cartItems[itemIndex];
+      item.quantity = newQuantity;
       item.subtotal = product.price * newQuantity;
     }
-    
+
+    // Recalculate total price for the cart
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
+
+    // Save the updated cart and return success response
     const updatedCart = await cart.save();
     return res.status(200).send({
-      message : "Item quantity updated successfully",
-      updatedCart : updatedCart});
+      message: "Item quantity updated successfully",
+      updatedCart: updatedCart
+    });
+
   } catch (error) {
-    errorHandler(error, req, res);
+    errorHandler(error, req, res); // Handle errors properly
   }
 };
+
 
 
 // Remove Product from Cart
