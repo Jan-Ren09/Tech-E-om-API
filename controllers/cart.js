@@ -129,7 +129,7 @@ module.exports.updateProductQuantity = async (req, res) => {
         return res.status(404).send({ message: 'Product not found' });
       }
       
-      item.subtotal = product.price * quantity;
+      item.subtotal = product.price * newQuantity;
     }
     
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
