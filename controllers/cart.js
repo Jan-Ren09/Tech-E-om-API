@@ -50,18 +50,21 @@ module.exports.addToCart = (req, res) => {
         const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId); 
         
         if (itemIndex > -1) {
-          // If it exists, update the quantity and subtotal
+          // If the product exists, update the quantity and subtotal
           cart.cartItems[itemIndex].quantity += quantity;
           cart.cartItems[itemIndex].subtotal = cart.cartItems[itemIndex].quantity * product.price;
         } else {
-          // If it doesn't exist, add the new product to the cart
+          // If the product doesn't exist, add it to the cart
           const newItem = {
             productId,
             quantity,
             subtotal: quantity * product.price
           };
-          cart.cartItems.push(newItem);
+          
+          // Create a new array with the existing cart items and the new item
+          cart.cartItems = [...cart.cartItems, newItem];
         }
+        
         
         // Recalculate total price
         cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
