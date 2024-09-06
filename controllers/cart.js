@@ -194,7 +194,7 @@ module.exports.clearCart = async (req, res) => {
     const cart = await Cart.findOne({ userId: req.user.id });
 
     if(!cart) {
-      return res.status(404).send({ message: 'Cart not found', cart : cart})
+      return res.status(404).send({ error: 'Cart not found', cart : cart})
     }
 
     // Need cart = 0 tapos total price = 0 
