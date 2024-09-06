@@ -123,23 +123,18 @@ module.exports.updateProductQuantity = async (req, res) => {
 
     // Handle product quantity update or removal
     if (newQuantity === 0) {
-      cart.cartItems.splice(itemIndex, 1); // Remove item from cart
+      // Remove item from cart
+      cart.cartItems = cart.cartItems.filter(item => item.productId.toString() !== productId);
     } else {
       // Check if product exists in the database
       const product = await Product.findById(productId);
       if (!product) {
-        return res.status(404).send({ message: 'Failed to update, Product not found' });
-      }
-
-      // Ensure the product's price is valid
-      if (typeof product.price !== 'number' || isNaN(product.price)) {
-        return res.status(500).send({ message: 'Invalid product price' });
+        return res.status(404).send({ message: 'Product not found' });
       }
 
       // Update item quantity and subtotal
-      const item = cart.cartItems[itemIndex];
-      item.quantity = newQuantity;
-      item.subtotal = product.price * newQuantity;
+      itemInCart.quantity = newQuantity;
+      itemInCart.subtotal = product.price * newQuantity;
     }
 
     // Recalculate total price for the cart
@@ -153,9 +148,10 @@ module.exports.updateProductQuantity = async (req, res) => {
     });
 
   } catch (error) {
-    errorHandler(error, req, res); // Handle errors properly
+    errorHandler(error, req, res); // Ensure proper error handling
   }
 };
+
 
 
 
