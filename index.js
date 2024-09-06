@@ -24,15 +24,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
-// const corsOptions = {
-// 	origin: ['http://localhost:3000'], // Allow requests from this origin (The client's URL) the origin is in Array form if there are multiple origins
-// 	//methods: '*', //Allow only specified HTTP methods // optional only if you want to restrict the methods
-// 	// allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers// optional only if you want to restrict the headers
-// 	credentials: true,
-// 	optionsSuccessStatus: 200
-// };
+const corsOptions = {
+	origin: ['http://localhost:3000'], // Allow requests from this origin (The client's URL) the origin is in Array form if there are multiple origins
+	//methods: '*', //Allow only specified HTTP methods // optional only if you want to restrict the methods
+	// allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers// optional only if you want to restrict the headers
+	credentials: true,
+	optionsSuccessStatus: 200
+};
 
-app.use(cors);
+app.use(cors(corsOptions));
 
 // [Section] Google Login for stretch goals
 
