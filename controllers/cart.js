@@ -172,13 +172,12 @@ module.exports.removeProduct = async (req, res) => {
         cart.cartItems = cart.cartItems.filter(item => item.productId.toString() !== productId);
         // Recalculate the total price
         cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
-        const updatedCart = await cart.save();
-        return res.status(200).send({message : 'Item remove from cart successfully', updatedCart : updatedCart});
       }else{
-        return res.status(200).send({ message: 'Item not found in cart' });
+        return res.status(200).send({ error: 'Item not found in cart' });
       }
     }
-    
+    const updatedCart = await cart.save();
+        return res.status(200).send({message : 'Item remove from cart successfully', updatedCart : updatedCart});
   } catch (error) {
     errorHandler(error, req, res);
   }
