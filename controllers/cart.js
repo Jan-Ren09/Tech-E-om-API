@@ -5,14 +5,11 @@ const { errorHandler } = require('../auth');
 // Get Cart
 module.exports.getCart = async (req, res) => {
   try {
-    if (req.user.isAdmin) {
-      return res.status(403).send({ message: 'Admins cannot access the cart' });
-    }
 
     const cart = await Cart.findOne({ userId: req.user.id });
     
     if (!cart) {
-      return res.status(404).send({ message: 'Cart not found' });
+      return res.status(404).send({ error: 'Cart not found' });
     }
     return res.status(200).send({cart : cart});
 
@@ -25,10 +22,6 @@ module.exports.getCart = async (req, res) => {
 module.exports.addToCart = (req, res) => {
   const { productId, quantity } = req.body;
 
-  // Admin should not be able to add to cart
-  if(req.user.isAdmin) {
-    return res.status(403).send({ message: 'Admins cannot add to cart'});
-  }
   
   // Ensure quantity is positive
   if (quantity <= 0) {
@@ -39,7 +32,7 @@ module.exports.addToCart = (req, res) => {
   Product.findById(productId)
   .then(product => {
     if (!product) {
-      return res.status(404).send({ message: 'Product not found' });
+      return res.status(404).send({ error: 'Product not found' });
     }
     
     // Find the user's cart by userId
@@ -50,18 +43,21 @@ module.exports.addToCart = (req, res) => {
         const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId); 
         
         if (itemIndex > -1) {
-          // If it exists, update the quantity and subtotal
+          // If the product exists, update the quantity and subtotal
           cart.cartItems[itemIndex].quantity += quantity;
           cart.cartItems[itemIndex].subtotal = cart.cartItems[itemIndex].quantity * product.price;
         } else {
-          // If it doesn't exist, add the new product to the cart
+          // If the product doesn't exist, add it to the cart
           const newItem = {
             productId,
             quantity,
             subtotal: quantity * product.price
           };
-          cart.cartItems.push(newItem);
+          
+          // Create a new array with the existing cart items and the new item
+          cart.cartItems = [...cart.cartItems, newItem];
         }
+        
         
         // Recalculate total price
         cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
@@ -98,48 +94,48 @@ module.exports.addToCart = (req, res) => {
 module.exports.updateProductQuantity = async (req, res) => {
   const { productId, newQuantity } = req.body;
 
-  // Ensure non-admin users can perform this action
-  if (req.user.isAdmin) {
-    return res.status(403).send({ message: 'Admins cannot change cart quantity' });
-  }
-
-  // Ensure new quantity is a valid, non-negative number
-  if (newQuantity === undefined || typeof newQuantity !== 'number' || newQuantity < 0) {
-    return res.status(400).send({ message: 'Quantity must be a non-negative number' });
-  }
-
   try {
     // Find user's cart
     const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
-      return res.status(404).send({ message: 'Cart not found' });
+      return res.status(404).send({ error: 'Cart not found' });
     }
 
     // Find product in the cart
-    const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
-    if (itemIndex === -1) {
-      return res.status(404).send({ message: 'Product not found in cart' });
-    }
-
-    // Handle product quantity update or removal
-    if (newQuantity === 0) {
-      cart.cartItems.splice(itemIndex, 1); // Remove item from cart
-    } else {
+    const itemInCart = cart.cartItems.find(item => item.productId.toString() === productId);
+    if (!itemInCart) {
       // Check if product exists in the database
       const product = await Product.findById(productId);
       if (!product) {
-        return res.status(404).send({ message: 'Failed to update, Product not found' });
+        return res.status(404).send({ error: 'Product not found' });
       }
 
-      // Ensure the product's price is valid
-      if (typeof product.price !== 'number' || isNaN(product.price)) {
-        return res.status(500).send({ message: 'Invalid product price' });
-      }
+      // Add product to cart with the specified quantity by creating a new array
+      cart.cartItems = [
+        ...cart.cartItems,
+        {
+          productId: productId,
+          quantity: newQuantity,
+          subtotal: product.price * newQuantity
+        }
+      ];
 
-      // Update item quantity and subtotal
-      const item = cart.cartItems[itemIndex];
-      item.quantity = newQuantity;
-      item.subtotal = product.price * newQuantity;
+    } else {
+      // Handle product quantity update or removal
+      if (newQuantity === 0) {
+        // Remove item from cart
+        cart.cartItems = cart.cartItems.filter(item => item.productId.toString() !== productId);
+      } else {
+        // Check if product exists in the database
+        const product = await Product.findById(productId);
+        if (!product) {
+          return res.status(404).send({ error: 'Product not found' });
+        }
+
+        // Update item quantity and subtotal
+        itemInCart.quantity = newQuantity;
+        itemInCart.subtotal = product.price * newQuantity;
+      }
     }
 
     // Recalculate total price for the cart
@@ -153,9 +149,11 @@ module.exports.updateProductQuantity = async (req, res) => {
     });
 
   } catch (error) {
-    errorHandler(error, req, res); // Handle errors properly
+    errorHandler(error, req, res);
   }
 };
+
+
 
 
 
@@ -165,28 +163,21 @@ module.exports.removeProduct = async (req, res) => {
   const { productId } = req.params;
 
   try {
-    if (req.user.isAdmin){
-      return res.status(403).send({ message: 'Action not allowed: user is an Admin' });
-    }
     const cart = await Cart.findOne({userId: req.user.id});
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
+    }else {
+      const itemInCart = cart.cartItems.find(item => item.productId.toString() === productId);
+      if (itemInCart) {
+        cart.cartItems = cart.cartItems.filter(item => item.productId.toString() !== productId);
+        // Recalculate the total price
+        cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
+      }else{
+        return res.status(200).send({ error: 'Item not found in cart' });
+      }
     }
-
-    const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
-
-    if (itemIndex === -1) {
-      return res.status(200).send({ message: 'Failed to remove, Item not found in cart' });
-    }
-
-    // Remove the product from the cart
-    cart.cartItems.splice(itemIndex, 1);
-
-    // Recalculate the total price
-    cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
-
     const updatedCart = await cart.save();
-    return res.status(200).send({message : 'Item remove from cart successfully', 'updatedCart' : updatedCart});
+        return res.status(200).send({message : 'Item remove from cart successfully', updatedCart : updatedCart});
   } catch (error) {
     errorHandler(error, req, res);
   }
@@ -196,13 +187,10 @@ module.exports.removeProduct = async (req, res) => {
 module.exports.clearCart = async (req, res) => {
 
   try {
-    if (req.user.isAdmin){
-      return res.status(403).send({ message: 'Action not allowed: user is an Admin' });}
-
     const cart = await Cart.findOne({ userId: req.user.id });
 
     if(!cart) {
-      return res.status(404).send({ message: 'Cart not found', cart : cart})
+      return res.status(404).send({ error: 'Cart not found', cart : cart})
     }
 
     // Need cart = 0 tapos total price = 0 
