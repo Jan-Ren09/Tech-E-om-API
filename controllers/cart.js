@@ -9,7 +9,7 @@ module.exports.getCart = async (req, res) => {
     const cart = await Cart.findOne({ userId: req.user.id });
     
     if (!cart) {
-      return res.status(404).send({ message: 'Cart not found' });
+      return res.status(404).send({ error: 'Cart not found' });
     }
     return res.status(200).send({cart : cart});
 
@@ -32,7 +32,7 @@ module.exports.addToCart = (req, res) => {
   Product.findById(productId)
   .then(product => {
     if (!product) {
-      return res.status(404).send({ message: 'Product not found' });
+      return res.status(404).send({ error: 'Product not found' });
     }
     
     // Find the user's cart by userId
@@ -94,12 +94,11 @@ module.exports.addToCart = (req, res) => {
 module.exports.updateProductQuantity = async (req, res) => {
   const { productId, newQuantity } = req.body;
 
-
   try {
     // Find user's cart
     const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
-      return res.status(404).send({ message: 'Cart not found' });
+      return res.status(404).send({ error: 'Cart not found' });
     }
 
     // Find product in the cart
@@ -192,7 +191,6 @@ module.exports.removeProduct = async (req, res) => {
 module.exports.clearCart = async (req, res) => {
 
   try {
-
     const cart = await Cart.findOne({ userId: req.user.id });
 
     if(!cart) {
