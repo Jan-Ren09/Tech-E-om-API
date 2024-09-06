@@ -107,7 +107,7 @@ module.exports.updateProductQuantity = async (req, res) => {
       // Check if product exists in the database
       const product = await Product.findById(productId);
       if (!product) {
-        return res.status(404).send({ message: 'Product not found' });
+        return res.status(404).send({ error: 'Product not found' });
       }
 
       // Add product to cart with the specified quantity by creating a new array
@@ -129,7 +129,7 @@ module.exports.updateProductQuantity = async (req, res) => {
         // Check if product exists in the database
         const product = await Product.findById(productId);
         if (!product) {
-          return res.status(404).send({ message: 'Product not found' });
+          return res.status(404).send({ error: 'Product not found' });
         }
 
         // Update item quantity and subtotal
