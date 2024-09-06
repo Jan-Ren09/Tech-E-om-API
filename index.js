@@ -32,7 +32,7 @@ app.use(express.urlencoded({extended:true}));
 // 	optionsSuccessStatus: 200
 // };
 
-app.use(cors(corsOptions));
+app.use(cors);
 
 // [Section] Google Login for stretch goals
 
