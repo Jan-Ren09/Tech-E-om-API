@@ -106,11 +106,6 @@ module.exports.updateProductQuantity = async (req, res) => {
     return res.status(403).send({ message: 'Admins cannot change cart quantity' });
   }
 
-  // Ensure new quantity is a valid, non-negative number
-  if (newQuantity === undefined || typeof newQuantity !== 'number' || newQuantity < 0) {
-    return res.status(200).send({ message: 'Quantity must be a non-negative number' });
-  }
-
   try {
     // Find user's cart
     const cart = await Cart.findOne({ userId: req.user.id });
@@ -166,7 +161,7 @@ module.exports.updateProductQuantity = async (req, res) => {
     });
 
   } catch (error) {
-    errorHandler(error, req, res); // Ensure proper error handling
+    errorHandler(error, req, res);
   }
 };
 
