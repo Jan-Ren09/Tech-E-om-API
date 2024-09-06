@@ -116,8 +116,8 @@ module.exports.updateProductQuantity = async (req, res) => {
     }
 
     // Find product in the cart
-    const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
-    if (itemIndex === -1) {
+    const itemInCart = cart.cartItems.findOne(item => item.productId.toString() === productId);
+    if (!itemIndex) {
       return res.status(404).send({ message: 'Product not found in cart' });
     }
 
