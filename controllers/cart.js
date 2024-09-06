@@ -121,23 +121,38 @@ module.exports.updateProductQuantity = async (req, res) => {
     // Find product in the cart
     const itemInCart = cart.cartItems.find(item => item.productId.toString() === productId);
     if (!itemInCart) {
-      return res.status(404).send({ message: 'Product not found in cart' });
-    }
-
-    // Handle product quantity update or removal
-    if (newQuantity === 0) {
-      // Remove item from cart
-      cart.cartItems = cart.cartItems.filter(item => item.productId.toString() !== productId);
-    } else {
       // Check if product exists in the database
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).send({ message: 'Product not found' });
       }
 
-      // Update item quantity and subtotal
-      itemInCart.quantity = newQuantity;
-      itemInCart.subtotal = product.price * newQuantity;
+      // Add product to cart with the specified quantity by creating a new array
+      cart.cartItems = [
+        ...cart.cartItems,
+        {
+          productId: productId,
+          quantity: newQuantity,
+          subtotal: product.price * newQuantity
+        }
+      ];
+
+    } else {
+      // Handle product quantity update or removal
+      if (newQuantity === 0) {
+        // Remove item from cart
+        cart.cartItems = cart.cartItems.filter(item => item.productId.toString() !== productId);
+      } else {
+        // Check if product exists in the database
+        const product = await Product.findById(productId);
+        if (!product) {
+          return res.status(404).send({ message: 'Product not found' });
+        }
+
+        // Update item quantity and subtotal
+        itemInCart.quantity = newQuantity;
+        itemInCart.subtotal = product.price * newQuantity;
+      }
     }
 
     // Recalculate total price for the cart
@@ -154,6 +169,7 @@ module.exports.updateProductQuantity = async (req, res) => {
     errorHandler(error, req, res); // Ensure proper error handling
   }
 };
+
 
 
 
