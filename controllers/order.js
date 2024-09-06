@@ -74,7 +74,7 @@ module.exports.getUserOrders = async (req, res) => {
 
       
       if (!orders.length) {
-          return res.status(404).json({ message: `No orders found for user ${req.user.id}` });
+          return res.status(404).json({ error: `No orders found for user ${req.user.id}` });
       }
 
     
