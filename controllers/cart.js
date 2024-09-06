@@ -161,36 +161,44 @@ module.exports.updateProductQuantity = async (req, res) => {
 
 
 // Remove Product from Cart
-module.exports.removeProduct = async (req, res) => {
-  const { productId } = req.params;
-
+module.exports.removeFromCart = async (req, res) => {
   try {
-    if (req.user.isAdmin){
-      return res.status(403).send({ message: 'Action not allowed: user is an Admin' });
+    const { productId } = req.params;
+
+    if (!productId) {
+      return res.status(400).send({ message: 'Product ID is required' });
     }
-    const cart = await Cart.findOne({userId: req.user.id});
+
+    const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
+    }
+
+    if (!Array.isArray(cart.cartItems) || cart.cartItems.length === 0) {
+      return res.status(404).send({ message: 'No items in the cart' });
     }
 
     const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
-      return res.status(200).send({ message: 'Failed to remove, Item not found in cart' });
+      return res.status(404).send({ message: 'Product not found in cart' });
     }
 
-    // Remove the product from the cart
     cart.cartItems.splice(itemIndex, 1);
 
-    // Recalculate the total price
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
 
     const updatedCart = await cart.save();
-    return res.status(200).send({message : 'Item remove from cart successfully', 'updatedCart' : updatedCart});
+
+    return res.status(200).send({
+      message: 'Product removed from cart successfully',
+      updatedCart: updatedCart
+    });
+    
   } catch (error) {
     errorHandler(error, req, res);
-  }
-};
+  };
+}
 
 // Clear Cart
 module.exports.clearCart = async (req, res) => {
