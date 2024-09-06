@@ -5,9 +5,6 @@ const { errorHandler } = require('../auth');
 // Get Cart
 module.exports.getCart = async (req, res) => {
   try {
-    if (req.user.isAdmin) {
-      return res.status(403).send({ message: 'Admins cannot access the cart' });
-    }
 
     const cart = await Cart.findOne({ userId: req.user.id });
     
@@ -25,10 +22,6 @@ module.exports.getCart = async (req, res) => {
 module.exports.addToCart = (req, res) => {
   const { productId, quantity } = req.body;
 
-  // Admin should not be able to add to cart
-  if(req.user.isAdmin) {
-    return res.status(403).send({ message: 'Admins cannot add to cart'});
-  }
   
   // Ensure quantity is positive
   if (quantity <= 0) {
@@ -101,10 +94,6 @@ module.exports.addToCart = (req, res) => {
 module.exports.updateProductQuantity = async (req, res) => {
   const { productId, newQuantity } = req.body;
 
-  // Ensure non-admin users can perform this action
-  if (req.user.isAdmin) {
-    return res.status(403).send({ message: 'Admins cannot change cart quantity' });
-  }
 
   try {
     // Find user's cart
@@ -175,9 +164,6 @@ module.exports.removeProduct = async (req, res) => {
   const { productId } = req.params;
 
   try {
-    if (req.user.isAdmin){
-      return res.status(403).send({ message: 'Action not allowed: user is an Admin' });
-    }
     const cart = await Cart.findOne({userId: req.user.id});
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
@@ -206,8 +192,6 @@ module.exports.removeProduct = async (req, res) => {
 module.exports.clearCart = async (req, res) => {
 
   try {
-    if (req.user.isAdmin){
-      return res.status(403).send({ message: 'Action not allowed: user is an Admin' });}
 
     const cart = await Cart.findOne({ userId: req.user.id });
 
