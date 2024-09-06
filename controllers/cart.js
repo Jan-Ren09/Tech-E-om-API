@@ -166,17 +166,14 @@ module.exports.removeProduct = async (req, res) => {
     const cart = await Cart.findOne({userId: req.user.id});
     if (!cart) {
       return res.status(404).send({ message: 'Cart not found' });
+    }else {
+      const itemInCart = cart.cartItems.find(item => item.productId.toString() === productId);
+      if (itemInCart) {
+        cart.cartItems = cart.cartItems.filter(item => item.productId.toString() !== productId);
+      }else{
+        return res.status(200).send({ message: 'Item not found in cart' });
+      }
     }
-
-    const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
-
-    if (itemIndex === -1) {
-      return res.status(200).send({ message: 'Item not found in cart' });
-    }
-
-    // Remove the product from the cart
-    cart.cartItems.splice(itemIndex, 1);
-
     // Recalculate the total price
     cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
 
