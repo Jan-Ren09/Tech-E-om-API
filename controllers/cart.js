@@ -94,6 +94,10 @@ module.exports.addToCart = (req, res) => {
 module.exports.updateProductQuantity = async (req, res) => {
   const { productId, newQuantity } = req.body;
 
+  if (typeof newQuantity !== 'number' || newQuantity < 0) {
+    return res.status(400).send({ error: 'Quantity must be a non-negative number' });
+  }
+  
   try {
     // Find user's cart
     const cart = await Cart.findOne({ userId: req.user.id });
