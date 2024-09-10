@@ -8,20 +8,13 @@
 
 ### Admin User:
 
-    email: jan@gmail.com
-    password: Jan12345
-
-    email: ken@mail.com
-    password: password1234
+    email: admin@mail.com
+    password: admin123
 
 ### Dummy Customer:
 
-    email: delasalas@gmail.com
-    password: delasalas12345
-
-    email: consumer@mail.com
-    password: password1234
-
+    email: customer@mail.com
+    password: customer123
 
 ## Features: 
 
