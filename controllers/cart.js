@@ -20,73 +20,66 @@ module.exports.getCart = async (req, res) => {
 
 // Add to Cart
 module.exports.addToCart = (req, res) => {
-  const { productId, quantity } = req.body;
-
-  
-  // Ensure quantity is positive
-  if (quantity <= 0) {
-    return res.status(400).send({ message: 'Quantity must be greater than 0' });
-  }
-  
-  // Find the product by ID
-  Product.findById(productId)
-  .then(product => {
-    if (!product) {
-      return res.status(404).send({ error: 'Product not found' });
-    }
     
-    // Find the user's cart by userId
-    Cart.findOne({ userId: req.user.id })
-    .then(cart => {
-      if (cart) {
-        // Check if the product is already in the cart
-        const itemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId); 
-        
-        if (itemIndex > -1) {
-          // If the product exists, update the quantity and subtotal
-          cart.cartItems[itemIndex].quantity += quantity;
-          cart.cartItems[itemIndex].subtotal = cart.cartItems[itemIndex].quantity * product.price;
-        } else {
-          // If the product doesn't exist, add it to the cart
-          const newItem = {
-            productId,
-            quantity,
-            subtotal: quantity * product.price
-          };
-          
-          // Create a new array with the existing cart items and the new item
-          cart.cartItems = [...cart.cartItems, newItem];
-        }
-        
-        
-        // Recalculate total price
-        cart.totalPrice = cart.cartItems.reduce((acc, item) => acc + item.subtotal, 0);
-        return cart.save()
-        .then(updatedCart => res.status(200).send({
-          message : `Item added to cart successfully`,
-          updatedCart : updatedCart}));
-      } else {
-        // If the cart doesn't exist, create a new one
-        const newCart = new Cart({
-          userId: req.user.id,
-          cartItems: [{
-            productId,
-            quantity,
-            subtotal: quantity * product.price
-          }],
-          totalPrice: quantity * product.price
-        });
-        
-        return newCart.save()
-        .then(savedCart => res.status(201).send({message : `Item added to cart successfully`,
-          cart : savedCart}));
-      }
-    })
-    .catch(err => res.status(500).send({ message: 'Error retrieving cart', error: err.message }));
-  })
-  .catch(error => errorHandler(error, req, res));
-};
+  const userId  = req.user.id;
+  const { productId, quantity, subtotal } = req.body;
 
+  return Cart.findOne({ userId: userId })
+  .then(cart => {
+      console.log({ cart: cart });
+      if(!cart) {
+          const newCart = new Cart({
+              userId: userId,
+              cartItems: [{
+                  productId: productId,
+                  quantity: quantity,
+                  subtotal: subtotal
+              }],
+              totalPrice: subtotal
+          })
+
+          return newCart.save()
+          .then(savedCart => {
+              if(!savedCart){
+                  return res.status(404).send({error: "Failed to save cart"});
+              } else {
+                  return res.status(201).send({ 
+                      message: "Item added to cart successfully",
+                      cart: savedCart
+                  });
+              }
+          })
+          .catch(error => res.status(500).json({ error: 'Internal server Error', error }))
+        } else {
+            const cartItemIndex = cart.cartItems.findIndex(item => item.productId.toString() === productId);
+
+            if(cartItemIndex >= 0) {
+                cart.cartItems[cartItemIndex].quantity += quantity;
+                cart.cartItems[cartItemIndex].subtotal += subtotal; 
+            } else {
+                const newCartItem = {
+                    productId: productId,
+                    quantity: quantity,
+                    subtotal: subtotal
+                };
+                cart.cartItems.push(newCartItem);
+            }
+
+            cart.totalPrice = cart.cartItems.reduce((total, item) => total + item.subtotal, 0);
+
+            return cart.save()
+            .then(addCart => {
+                return res.status(201).json({ 
+                    message: 'Item added to cart successfully',
+                    cart: addCart
+                })
+            })
+            .catch(error => res.status(500).json({ error: 'Internal server Error', error }))
+        }
+    }) 
+    .catch(error => res.status(500).json({ error: 'Failed to find cart', error }))
+
+}
 
 
 
