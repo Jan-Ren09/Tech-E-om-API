@@ -5,17 +5,24 @@ const { errorHandler } = require('../auth');
 // Get Cart
 module.exports.getCart = async (req, res) => {
   try {
+    const cart = await Cart.findOne({ userId: req.user.id })
+        .populate({
+            path: 'cartItems.productId',
+            select: 'name' 
+        });
 
-    const cart = await Cart.findOne({ userId: req.user.id });
-    
     if (!cart) {
-      return res.status(404).send({ error: 'Cart not found' });
+        return res.status(404).json({ message: "Cart not found" });
     }
-    return res.status(200).send({cart : cart});
 
-  } catch (error) {
-    errorHandler(error, req, res);
-  }
+    cart.cartItems.forEach(item => {
+        item.productName = item.productId.name;
+    });
+
+    res.json(cart);
+} catch (error) {
+    res.status(500).json({ message: error.message });
+}
 };
 
 // Add to Cart
