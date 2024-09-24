@@ -70,7 +70,11 @@ module.exports.getUserOrders = async (req, res) => {
       return res.status(403).send({ message: 'Action not allowed, User is an Admin' });
     }
      
-      const orders = await Order.find({ userId: req.user.id });
+      const orders = await Order.find({ userId: req.user.id })
+      .populate({
+        path: 'orderItems.productId',
+        select: 'name' 
+    });
 
       
       if (!orders.length) {
