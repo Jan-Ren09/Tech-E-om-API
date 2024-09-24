@@ -208,3 +208,24 @@ module.exports.changePassword = async (req, res) => {
 	  errorHandler(error, req, res);
 	}
 };
+
+module.exports.updateProfile = async (req, res) => {
+    try {
+
+        const userId = req.user.id;
+
+       
+        const { firstName, lastName, mobileNo } = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { firstName, lastName, mobileNo },
+            { new: true }
+        );
+
+        res.send(updatedUser);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to update profile' });
+    }
+}
