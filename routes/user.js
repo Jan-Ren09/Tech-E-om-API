@@ -81,6 +81,9 @@ router.post("/login", userController.loginUser);
 router.get("/details", verify, userController.getProfile);
 
 
+router.put('/profile', verify, userController.updateProfile);
+
+
 router.patch('/update-password', verify, userController.resetPassword);
 
 
