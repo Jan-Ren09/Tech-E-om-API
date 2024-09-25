@@ -18,6 +18,7 @@ module.exports.getCart = async (req, res) => {
 
     cart.cartItems.forEach(item => {
         item.productName = item.productId.name;
+        item.productImage = item.productId.image;
     });
 
     res.json(cart);
