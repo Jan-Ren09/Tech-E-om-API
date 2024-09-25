@@ -58,7 +58,9 @@ module.exports.addToCart = (req, res) => {
           const newItem = {
             productId,
             quantity,
-            subtotal: quantity * product.price
+            subtotal: quantity * product.price,
+            image
+
           };
 
           // Create a new array with the existing cart items and the new item
