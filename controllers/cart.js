@@ -8,7 +8,8 @@ module.exports.getCart = async (req, res) => {
     const cart = await Cart.findOne({ userId: req.user.id })
         .populate({
             path: 'cartItems.productId',
-            select: 'name' 
+            select: {'name': 1, 'image': 1}
+            
         });
 
     if (!cart) {
