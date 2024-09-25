@@ -5,10 +5,6 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Name is required']
     },
-    description: {
-        type: String,
-        required: [true, 'Course Description is Required']
-    },
     price: {
         type: Number,
         required: [true, 'Course Price is Required']
@@ -23,7 +19,7 @@ const productSchema = new mongoose.Schema({
     },
     image: { 
         type: String,
-        required: [true, 'Image URL is required']
+        required: [true, 'Image URL is required']  
     }
 });
 
