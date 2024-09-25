@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema({
     createdOn: {
         type: Date,
         default: Date.now
+    },
+    image: { 
+        type: String,
+        required: [true, 'Image URL is required']
     }
 });
 

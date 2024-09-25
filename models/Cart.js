@@ -20,6 +20,10 @@ const cartSchema = new mongoose.Schema({
             subtotal: {
                 type: Number,
                 default: 0
+            },
+            image: { 
+                type: String,
+                required: [true, 'Image URL is required'] 
             }
         }
     ],

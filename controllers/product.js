@@ -13,6 +13,7 @@ module.exports.createProduct = async (req, res) => {
             name: req.body.name,
             description: req.body.description,
             price: req.body.price,
+            image: req.body.image
         });
 
         const result = await newProduct.save();
@@ -74,6 +75,7 @@ module.exports.updateProduct = async (req, res) => {
             name: req.body.name,
             description: req.body.description,
             price: req.body.price,
+            image: req.body.image
         };
 
         const product = await Product.findByIdAndUpdate(productId, updatedProduct, { new: true });
