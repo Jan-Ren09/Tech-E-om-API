@@ -61,7 +61,7 @@ module.exports.addToCart = (req, res) => {
             productId,
             quantity,
             subtotal: quantity * product.price,
-            image
+            
 
           };
 
