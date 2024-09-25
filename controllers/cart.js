@@ -5,10 +5,10 @@ const { errorHandler } = require('../auth');
 // Get Cart
 module.exports.getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.user.id })
+    const cart = await Product.findOne({ userId: req.user.id })
         .populate({
             path: 'cartItems.productId',
-            select: {'name': 1, 'image': 1}
+            select: 'name image'
             
         });
 
