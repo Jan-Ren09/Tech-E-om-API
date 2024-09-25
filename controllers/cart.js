@@ -5,11 +5,10 @@ const { errorHandler } = require('../auth');
 // Get Cart
 module.exports.getCart = async (req, res) => {
   try {
-    const cart = await Product.findOne({ userId: req.user.id })
+    const cart = await Cart.findOne({ userId: req.user.id })
         .populate({
             path: 'cartItems.productId',
-            select: 'name'
-            
+            select: 'name' 
         });
 
     if (!cart) {
@@ -59,9 +58,7 @@ module.exports.addToCart = (req, res) => {
           const newItem = {
             productId,
             quantity,
-            subtotal: quantity * product.price,
-            
-
+            subtotal: quantity * product.price
           };
 
           // Create a new array with the existing cart items and the new item
