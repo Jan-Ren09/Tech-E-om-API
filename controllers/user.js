@@ -31,44 +31,48 @@ module.exports.resetPassword = async (req, res) => {
 };
 
 
-module.exports.registerUser = async (req, res) => {
-	try {
-	  // async and await
-	  const existingUser = await User.findOne({ email: req.body.email });
-	  if (existingUser) {
-		return res.status(409).send({ message: 'User email already registered' });
-	  }
-  
-	  // Checks if the email is in the correct format
-	  if (!req.body.email.includes("@")) {
-		return res.status(400).send({ error: 'Email Invalid' });
-	  }
-	  // Checks if the mobile number has the correct number of characters
-	  else if (req.body.mobileNo.length !== 11) {
-		return res.status(400).send({ error: 'Mobile number invalid' });
-	  }
-	  // Checks if the password has at least 8 characters
-	  else if (req.body.password.length < 8) {
-		return res.status(400).send({ error: 'Password must be atleast 8 characters' });
-	  } else {
-		// If all needed requirements are met, create the new user
-		let newUser = new User({
-		  firstName: req.body.firstName,
-		  lastName: req.body.lastName,
-		  email: req.body.email,
-		  mobileNo: req.body.mobileNo,
-		  password: bcrypt.hashSync(req.body.password, 10)
-		});
-  
-		// Save the new user to the database
-		return newUser.save()
-		  .then(result => res.status(201).send({ message: 'Registered Successfully'}))
-		  .catch(error => errorHandler(error, req, res));
-	  }
-	} catch (error) {
-	  errorHandler(error, req, res);
-	}
-  };
+module.exports.registerUser = (req, res) => {
+    const { email, password, username } = req.body;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Validate email format
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    // Check if email is already registered
+    User.findOne({ email })
+        .then(existingUser => {
+            if (existingUser) {
+                return res.status(409).json({ message: 'User email already registered' });
+            }
+            // Check if username is already taken
+            return User.findOne({ username });
+        })
+        .then(existingUsername => {
+            if (existingUsername) {
+                return res.status(409).json({ message: 'Username already taken' });
+            }
+
+            // Hash the password and create a new user
+            return bcrypt.hash(password, 10);
+        })
+        .then(hashedPassword => {
+            const newUser = new User({
+                email,
+                password: hashedPassword,
+                username
+            });
+            return newUser.save();
+        })
+        .then(savedUser => {
+            return res.status(201).json({ message: 'Registered successfully' });
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({ message: 'Internal server error' });
+        });
+};
 
 
 
