@@ -40,7 +40,7 @@ module.exports.verify = (req, res, next) => {
 	let token = req.headers.authorization
 
 	if(typeof token === "undefined"){
-		return res.send ({ auth: "Failed. No Token"})
+		return res.status(401).send ({ auth: "Failed. No Token"})
 	} else {
 		console.log(token);
 		token = token.slice(7, token.length)
